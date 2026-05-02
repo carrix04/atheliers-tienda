@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'catalog',
+
+    'cloudinary_storage',
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -129,10 +132,15 @@ CORS_ALLOW_ALL_ORIGINS = True
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# ☁️ Configuración de Cloudinary para fotos de Atheliers
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'root',
+    'API_KEY': '298392612628725',
+    'API_SECRET': 'OwvL3_DYKOEQsPBCddXa7J8AFw4'
+}
 
 # ☁️ Diccionario Maestro de Almacenamiento (Django 5+)
 STORAGES = {
-    # Aquí se guardan las imágenes (va hacia Cloudinary)
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
@@ -141,16 +149,9 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
-# ... (todo lo que ya tenías arriba) ...
 
-# Al final de tu archivo pega esto:
 
-# ☁️ Configuración de Cloudinary para fotos de Atheliers
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'root',
-    'API_KEY': '298392612628725',
-    'API_SECRET': 'OwvL3_DYKOEQsPBCddXa7J8AFw4'
-}
+
 
 # Esto le dice a Django: "No guardes las fotos aquí, mándalas a la nube"
 #DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
