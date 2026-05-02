@@ -8,8 +8,8 @@ django.setup()
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-username = 'admin'  # Puedes cambiarlo
-password = 'TuPasswordSegura123' # Pon una contraseña real
+username = 'atheliers'  # Puedes cambiarlo
+password = 'admin123' # Pon una contraseña real
 email = 'admin@atheliers.com'
 
 if not User.objects.filter(username=username).exists():
