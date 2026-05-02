@@ -1,19 +1,20 @@
+# En backend/create_admin.py
 import os
 import django
 
-# Configuramos el entorno de Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings') # Cambia 'core' si tu carpeta se llama distinto
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
 
 from django.contrib.auth import get_user_model
-
 User = get_user_model()
-username = 'atheliers'  # Puedes cambiarlo
-password = 'admin123' # Pon una contraseña real
+
+# Usaremos datos muy simples para probar
+username = 'admin'
+password = 'admin123' # Cambia esto por algo que no olvides
 email = 'admin@atheliers.com'
 
-if not User.objects.filter(username=username).exists():
-    User.objects.create_superuser(username, email, password)
-    print(f"✅ Superusuario '{username}' creado exitosamente.")
-else:
-    print(f"⚠️ El usuario '{username}' ya existe.")
+# Esto borra al usuario si ya existía a medias y lo crea de cero
+User.objects.filter(username=username).delete()
+User.objects.create_superuser(username, email, password)
+
+print(f"🚀 USUARIO '{username}' REESTABLECIDO CON CONTRASEÑA: {password}")
