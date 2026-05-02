@@ -129,12 +129,18 @@ CORS_ALLOW_ALL_ORIGINS = True
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+
+# ☁️ Diccionario Maestro de Almacenamiento (Django 5+)
 STORAGES = {
+    # Aquí se guardan las imágenes (va hacia Cloudinary)
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    # Aquí se guardan los CSS/JS (va hacia Whitenoise)
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
-
 # ... (todo lo que ya tenías arriba) ...
 
 # Al final de tu archivo pega esto:
@@ -147,4 +153,4 @@ CLOUDINARY_STORAGE = {
 }
 
 # Esto le dice a Django: "No guardes las fotos aquí, mándalas a la nube"
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+#DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
