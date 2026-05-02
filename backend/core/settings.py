@@ -134,7 +134,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # ☁️ Configuración de Cloudinary para fotos de Atheliers
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'root',
+    'CLOUD_NAME': 'dy5jwmfcs',
     'API_KEY': '298392612628725',
     'API_SECRET': 'OwvL3_DYKOEQsPBCddXa7J8AFw4'
 }
