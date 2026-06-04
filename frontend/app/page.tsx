@@ -46,6 +46,10 @@ export default function Home() {
         joya.categoria.toLowerCase().trim() === filtro.toLowerCase().trim()
       );
 
+  const handleInstagramClick = () => {
+    window.open('https://ig.me/m/cn.atheliers', '_blank');
+  };
+
   return (
     <main className="page">
       <div className="bgContenedor">
@@ -115,11 +119,19 @@ export default function Home() {
         <div className="contenidoPie">
           <p>&copy; 2026 Atheliers. Todos los derechos reservados.</p>
           <div className="redes">
-            <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
-            <a href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            <a href="https://instagram.com/cn.atheliers" target="_blank" rel="noopener noreferrer">Instagram</a>
           </div>
         </div>
       </footer>
+
+      <button className="btnFlotanteInsta" onClick={handleInstagramClick} aria-label="Enviar mensaje por Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
+        <span>Pedir por DM</span>
+      </button>
 
       <style jsx>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&display=swap');
@@ -415,6 +427,39 @@ export default function Home() {
           color: #4a1e23;
         }
 
+        .btnFlotanteInsta {
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          background: #3a171b;
+          color: #f9f5f1;
+          border: none;
+          border-radius: 50px;
+          padding: 14px 24px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-family: 'system-ui', -apple-system, sans-serif;
+          font-size: 0.9rem;
+          font-weight: 500;
+          letter-spacing: 1px;
+          cursor: pointer;
+          z-index: 100;
+          box-shadow: 0 8px 25px rgba(58, 23, 27, 0.25);
+          transition: all 0.3s ease;
+        }
+
+        .btnFlotanteInsta:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 12px 30px rgba(58, 23, 27, 0.35);
+          background: #4a1e23;
+        }
+
+        .btnFlotanteInsta svg {
+          width: 20px;
+          height: 20px;
+        }
+
         @media (max-width: 768px) {
           .hero {
             padding: 100px 20px 60px;
@@ -452,6 +497,11 @@ export default function Home() {
           .contenidoPie {
             flex-direction: column;
             text-align: center;
+          }
+          .btnFlotanteInsta {
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
           }
         }
       `}</style>
