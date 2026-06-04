@@ -1,55 +1,48 @@
-"use client"
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+'use client';
+
+import { useEffect, useState } from 'react';
 
 export default function Home() {
-  // 1. Aquí guardaremos las joyas que vengan de tu base de datos
-  const [joyas, setJoyas] = useState([]);
+  const [joyas, setJoyas] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // 2. Esta es la llamada "fetch" que le pide las fotos a Django
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/joyas/")
+    fetch('http://127.0.0.1:8000/api/joyas/')
       .then((res) => res.json())
-      .then((data) => setJoyas(data))
-      .catch((err) => console.error("Error al cargar:", err));
+      .then((data) => {
+        setJoyas(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error al cargar:", err);
+        setLoading(false);
+      });
   }, []);
 
   return (
-    <main className="min-h-screen bg-white text-black flex flex-col items-center p-10 font-sans">
+    <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <h1>Atheliers Store</h1>
       
-      {/* Título animado */}
-      <motion.h1 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-        className="text-5xl font-extralight tracking-[0.3em] mb-24 mt-10"
-      >
-        ATHELIERS
-      </motion.h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 max-w-6xl w-full">
-        
-        {/* 3. Aquí creamos las joyas dinámicamente según lo que subas al panel */}
-        {joyas.map((joya: any) => (
-          <motion.div 
-            key={joya.id}
-            whileHover={{ y: -10 }}
-            className="group cursor-pointer flex flex-col items-center"
-          >
-            <div className="bg-gray-50 overflow-hidden w-full aspect-[4/5] mb-6">
-              {/* Carga la foto real que subiste en Django */}
-              <img 
-                src={joya.imagen} 
-                alt={joya.nombre} 
-                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
-              />
+      {loading ? (
+        <p>Cargando catalogo...</p>
+      ) : (
+        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginTop: '20px' }}>
+          {joyas.map((joya) => (
+            <div key={joya.id} style={{ border: '1px solid #eaeaea', padding: '1rem', borderRadius: '8px', width: '250px' }}>
+              {joya.imagen && (
+                <img 
+                  src={joya.imagen} 
+                  alt={joya.nombre} 
+                  style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '4px' }} 
+                />
+              )}
+              <h2 style={{ fontSize: '1.2rem', margin: '10px 0' }}>{joya.nombre}</h2>
+              <p style={{ color: '#666', fontSize: '0.9rem' }}>{joya.descripcion}</p>
+              <p style={{ fontWeight: 'bold', marginTop: '10px' }}>${joya.precio}</p>
             </div>
-            <h2 className="text-sm tracking-[0.2em] uppercase font-light">{joya.nombre}</h2>
-            <p className="text-gray-400 text-xs mt-2">${joya.precio} MXN</p>
-          </motion.div>
-        ))}
-
-      </div>
+          ))}
+        </div>
+      )}
     </main>
   );
 }
