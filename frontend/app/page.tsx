@@ -47,7 +47,7 @@ export default function Home() {
       );
 
   const handleInstagramClick = () => {
-    window.open('https://ig.me/m/tu_usuario_aqui', '_blank');
+    window.open('https://ig.me/m/cn.atheliers', '_blank');
   };
 
   return (
@@ -116,7 +116,7 @@ export default function Home() {
         <div className="contenidoPie">
           <p>&copy; 2026 Atheliers. Todos los derechos reservados.</p>
           <div className="redes">
-            <a href="https://instagram.com/tu_usuario_aqui" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="https://instagram.com/cn.atheliers" target="_blank" rel="noopener noreferrer">Instagram</a>
           </div>
         </div>
       </footer>
