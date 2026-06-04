@@ -111,7 +111,7 @@ export default function Home() {
         .page {
           position: relative;
           min-height: 100vh;
-          background: #fcfaf8;
+          background: transparent;
           color: #3a171b;
           padding: 0;
         }
