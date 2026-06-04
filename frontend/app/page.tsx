@@ -325,10 +325,46 @@ export default function Home() {
         .price {
           margin: 0;
           white-space: nowrap;
-          font-family: Georgia, 'Times New Roman', serif;
-          font-size: 1rem;
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-size: 1.1rem;
           color: #4a1e23;
-          font-weight: 400;
+          font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+          .hero {
+            padding: 100px 20px 60px;
+          }
+          h1 {
+            font-size: clamp(3.5rem, 15vw, 5rem);
+          }
+          .logoCenter {
+            margin: 40px auto 0;
+            width: 130px;
+          }
+          .menuContenedor {
+            top: 10px;
+            margin-bottom: 40px;
+          }
+          .menuCategorias {
+            gap: 15px;
+            padding: 12px 20px;
+          }
+          .btnCategoria {
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+          }
+          .contentWrapper {
+            padding: 0 15px 60px;
+          }
+          .gallery {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px 15px;
+          }
+          .info {
+            flex-direction: column;
+            gap: 8px;
+          }
         }
       `}</style>
     </main>
