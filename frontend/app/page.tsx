@@ -12,6 +12,7 @@ type Joya = {
 
 export default function Home() {
   const [joyas, setJoyas] = useState<Joya[]>([]);
+  const [cargando, setCargando] = useState(true);
   const [filtro, setFiltro] = useState('Todas');
   const bgWatermarkRef = useRef<HTMLImageElement>(null);
   const heroRef = useRef<HTMLElement>(null);
@@ -19,9 +20,18 @@ export default function Home() {
   const categorias = ['Todas', 'Anillos', 'Pulseras', 'Collares'];
 
   useEffect(() => {
-    fetch('https://atheliers-backend.onrender.com/api/joyas/')
+    fetch('https://atheliers-backend.onrender.com/api/joyas/', {
+      cache: 'no-store'
+    })
       .then((res) => res.json())
-      .then((data) => setJoyas(data));
+      .then((data) => {
+        setJoyas(data);
+        setCargando(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setCargando(false);
+      });
 
     const handleScroll = () => {
       const scroll = window.scrollY;
@@ -86,7 +96,11 @@ export default function Home() {
           </nav>
         </div>
 
-        {joyasFiltradas.length === 0 ? (
+        {cargando ? (
+          <div className="estadoVacio">
+            <p>Conectando al atelier...</p>
+          </div>
+        ) : joyasFiltradas.length === 0 ? (
           <div className="estadoVacio">
             <p>Proximamente nuevas piezas en esta coleccion.</p>
           </div>
@@ -135,12 +149,13 @@ export default function Home() {
 
         .page {
           position: relative;
-          min-height: 100vh;
+          min-height: 100dvh;
           background: transparent;
           color: #3a171b;
           padding: 0;
           display: flex;
           flex-direction: column;
+          overflow-x: hidden;
         }
 
         .bgContenedor {
@@ -373,7 +388,7 @@ export default function Home() {
           position: relative;
           z-index: 20;
           border-top: 1px solid rgba(74, 30, 35, 0.08);
-          padding: 40px 5%;
+          padding: 40px 5% 90px;
           margin-top: auto;
         }
 
@@ -381,10 +396,10 @@ export default function Home() {
           max-width: 1280px;
           margin: 0 auto;
           display: flex;
-          justify-content: space-between;
+          flex-direction: column;
+          justify-content: center;
           align-items: center;
-          flex-wrap: wrap;
-          gap: 20px;
+          gap: 12px;
           font-size: 0.8rem;
           color: #a28b85;
           font-family: 'system-ui', -apple-system, sans-serif;
@@ -393,6 +408,7 @@ export default function Home() {
         .redes {
           display: flex;
           gap: 24px;
+          justify-content: center;
         }
 
         .redes a {
