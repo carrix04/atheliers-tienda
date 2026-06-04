@@ -85,25 +85,41 @@ export default function Home() {
           </nav>
         </div>
 
-        <section className="gallery">
-          {joyasFiltradas.map((joya) => (
-            <article key={joya.id} className="card">
-              <div className="imageBox">
-                <img src={joya.imagen} alt={joya.nombre} />
-              </div>
-
-              <div className="info">
-                <div>
-                  <h2>{joya.nombre}</h2>
-                  <p className="category">{joya.categoria}</p>
+        {joyasFiltradas.length === 0 ? (
+          <div className="estadoVacio">
+            <p>Proximamente nuevas piezas en esta coleccion.</p>
+          </div>
+        ) : (
+          <section className="gallery">
+            {joyasFiltradas.map((joya) => (
+              <article key={joya.id} className="card animacionFade">
+                <div className="imageBox">
+                  <img src={joya.imagen} alt={joya.nombre} />
                 </div>
 
-                <p className="price">${joya.precio}</p>
-              </div>
-            </article>
-          ))}
-        </section>
+                <div className="info">
+                  <div>
+                    <h2>{joya.nombre}</h2>
+                    <p className="category">{joya.categoria}</p>
+                  </div>
+
+                  <p className="price">${joya.precio}</p>
+                </div>
+              </article>
+            ))}
+          </section>
+        )}
       </div>
+
+      <footer className="piePagina">
+        <div className="contenidoPie">
+          <p>&copy; 2026 Atheliers. Todos los derechos reservados.</p>
+          <div className="redes">
+            <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          </div>
+        </div>
+      </footer>
 
       <style jsx>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&display=swap');
@@ -114,6 +130,8 @@ export default function Home() {
           background: transparent;
           color: #3a171b;
           padding: 0;
+          display: flex;
+          flex-direction: column;
         }
 
         .bgContenedor {
@@ -136,7 +154,7 @@ export default function Home() {
           max-width: 1800px;
           height: auto;
           object-fit: contain;
-          opacity: 0.04;
+          opacity: 0.02;
           will-change: transform;
         }
 
@@ -210,10 +228,11 @@ export default function Home() {
         .contentWrapper {
           position: relative;
           background: transparent;
-          padding: 0 5% 90px;
+          padding: 0 5% 40px;
           max-width: 1280px;
           margin: 0 auto;
           z-index: 20;
+          flex-grow: 1;
         }
 
         .menuContenedor {
@@ -231,7 +250,7 @@ export default function Home() {
           justify-content: center;
           gap: 40px;
           flex-wrap: wrap;
-          background: rgba(252, 250, 248, 0.85);
+          background: rgba(249, 245, 241, 0.85);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
           padding: 15px 30px;
@@ -263,6 +282,15 @@ export default function Home() {
           border-bottom: 1px solid #4a1e23;
         }
 
+        .estadoVacio {
+          text-align: center;
+          padding: 80px 20px;
+          color: #a28b85;
+          font-size: 1.4rem;
+          font-style: italic;
+          font-family: 'Cormorant Garamond', Georgia, serif;
+        }
+
         .gallery {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -275,6 +303,16 @@ export default function Home() {
           border-radius: 0;
           box-shadow: none;
           transition: all 0.35s ease;
+        }
+
+        .animacionFade {
+          animation: fadeSutil 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          opacity: 0;
+        }
+
+        @keyframes fadeSutil {
+          0% { opacity: 0; transform: translateY(20px); }
+          100% { opacity: 1; transform: translateY(0); }
         }
 
         .card:hover {
@@ -339,6 +377,44 @@ export default function Home() {
           font-weight: 500;
         }
 
+        .piePagina {
+          position: relative;
+          z-index: 20;
+          border-top: 1px solid rgba(74, 30, 35, 0.08);
+          padding: 40px 5%;
+          margin-top: auto;
+        }
+
+        .contenidoPie {
+          max-width: 1280px;
+          margin: 0 auto;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 20px;
+          font-size: 0.8rem;
+          color: #a28b85;
+          font-family: 'system-ui', -apple-system, sans-serif;
+        }
+
+        .redes {
+          display: flex;
+          gap: 24px;
+        }
+
+        .redes a {
+          color: #7b6460;
+          text-decoration: none;
+          transition: color 0.3s ease;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .redes a:hover {
+          color: #4a1e23;
+        }
+
         @media (max-width: 768px) {
           .hero {
             padding: 100px 20px 60px;
@@ -363,7 +439,7 @@ export default function Home() {
             letter-spacing: 1px;
           }
           .contentWrapper {
-            padding: 0 15px 60px;
+            padding: 0 15px 40px;
           }
           .gallery {
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -372,6 +448,10 @@ export default function Home() {
           .info {
             flex-direction: column;
             gap: 8px;
+          }
+          .contenidoPie {
+            flex-direction: column;
+            text-align: center;
           }
         }
       `}</style>
