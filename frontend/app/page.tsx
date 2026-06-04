@@ -24,7 +24,9 @@ export default function Home() {
 
   const joyasFiltradas = filtro === 'Todas'
     ? joyas
-    : joyas.filter(joya => joya.nombre.toLowerCase().includes(filtro.toLowerCase().replace(/s$/, '')));
+    : joyas.filter(joya => 
+        joya.categoria.toLowerCase().trim() === filtro.toLowerCase().trim()
+      );
 
   return (
     <main className="page">
