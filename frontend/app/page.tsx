@@ -136,7 +136,7 @@ export default function Home() {
           max-width: 1800px;
           height: auto;
           object-fit: contain;
-          opacity: 0.02;
+          opacity: 0.04;
           will-change: transform;
         }
 
