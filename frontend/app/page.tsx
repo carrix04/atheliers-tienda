@@ -174,6 +174,7 @@ export default function Home() {
           letter-spacing: 4px;
           color: #9a6a5e;
           font-weight: 400;
+          text-align: center;
         }
 
         h1 {
@@ -185,6 +186,7 @@ export default function Home() {
           color: #4a1e23;
           text-transform: uppercase;
           line-height: 1;
+          text-align: center;
         }
 
         .line {
@@ -202,6 +204,7 @@ export default function Home() {
           line-height: 1.8;
           color: #7b6460;
           font-weight: 300;
+          text-align: center;
         }
 
         .contentWrapper {
@@ -267,23 +270,28 @@ export default function Home() {
         }
 
         .card {
-          background: white;
-          padding: 15px;
-          border-radius: 15px;
-          box-shadow: 0 4px 15px rgba(74, 30, 35, 0.02);
+          background: transparent;
+          padding: 0;
+          border-radius: 0;
+          box-shadow: none;
           transition: all 0.35s ease;
         }
 
         .card:hover {
           transform: translateY(-8px);
-          box-shadow: 0 12px 30px rgba(74, 30, 35, 0.06);
         }
 
         .imageBox {
           aspect-ratio: 3 / 4;
           overflow: hidden;
-          border-radius: 10px;
+          border-radius: 12px;
           background: #eee8e5;
+          box-shadow: 0 4px 15px rgba(74, 30, 35, 0.02);
+          transition: box-shadow 0.35s ease;
+        }
+
+        .card:hover .imageBox {
+          box-shadow: 0 12px 30px rgba(74, 30, 35, 0.06);
         }
 
         .imageBox img {
