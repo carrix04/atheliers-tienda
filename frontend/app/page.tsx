@@ -7,6 +7,7 @@ type Joya = {
   nombre: string;
   precio: string | number;
   imagen: string;
+  categoria: string;
 };
 
 export default function Home() {
@@ -62,7 +63,7 @@ export default function Home() {
             <div className="info">
               <div>
                 <h2>{joya.nombre}</h2>
-                <p className="category">Pieza exclusiva</p>
+                <p className="category">{joya.categoria}</p>
               </div>
 
               <p className="price">${joya.precio}</p>
