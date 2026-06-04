@@ -47,7 +47,7 @@ export default function Home() {
       );
 
   const handleInstagramClick = () => {
-    window.open('https://ig.me/m/cn.atheliers', '_blank');
+    window.open('https://ig.me/m/tu_usuario_aqui', '_blank');
   };
 
   return (
@@ -69,9 +69,6 @@ export default function Home() {
         <p className="subtitle">
           Joyeria elegante, minimalista y disenada para destacar cada detalle.
         </p>
-        <div className="logoCenter">
-          <img src="/logo.png" alt="" className="logoFloating" />
-        </div>
       </section>
 
       <div className="contentWrapper">
@@ -119,7 +116,7 @@ export default function Home() {
         <div className="contenidoPie">
           <p>&copy; 2026 Atheliers. Todos los derechos reservados.</p>
           <div className="redes">
-            <a href="https://instagram.com/cn.atheliers" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="https://instagram.com/tu_usuario_aqui" target="_blank" rel="noopener noreferrer">Instagram</a>
           </div>
         </div>
       </footer>
@@ -166,35 +163,18 @@ export default function Home() {
           max-width: 1800px;
           height: auto;
           object-fit: contain;
-          opacity: 0.02;
+          opacity: 0.04;
           will-change: transform;
         }
 
         .hero {
           position: relative;
           text-align: center;
-          padding: 160px 20px 80px;
+          padding: 22vh 20px 10vh;
           max-width: 900px;
           margin: 0 auto;
           z-index: 10;
           will-change: transform, opacity;
-        }
-
-        .logoCenter {
-          margin: 50px auto 0;
-          width: 180px;
-        }
-
-        .logoFloating {
-          width: 100%;
-          height: auto;
-          animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-          100% { transform: translateY(0px); }
         }
 
         .eyebrow {
@@ -462,14 +442,10 @@ export default function Home() {
 
         @media (max-width: 768px) {
           .hero {
-            padding: 100px 20px 60px;
+            padding: 18vh 20px 8vh;
           }
           h1 {
             font-size: clamp(3.5rem, 15vw, 5rem);
-          }
-          .logoCenter {
-            margin: 40px auto 0;
-            width: 130px;
           }
           .menuContenedor {
             top: 10px;
