@@ -7,7 +7,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/joyas/')
+    fetch('https://atheliers-backend.onrender.com/api/joyas/')
       .then((res) => res.json())
       .then((data) => {
         setJoyas(data);
