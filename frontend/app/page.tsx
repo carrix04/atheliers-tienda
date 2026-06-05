@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type Joya = {
   id: number;
@@ -44,7 +44,7 @@ export default function Home() {
 
       if (heroRef.current) {
         heroRef.current.style.transform = `translateY(${scroll * 0.3}px)`;
-        heroRef.current.style.opacity = `${1 - scroll / 400}`;
+        heroRef.current.style.opacity = `${Math.max(0, 1 - scroll / 400)}`;
       }
     };
 
@@ -89,21 +89,22 @@ export default function Home() {
         </p>
       </section>
 
-      <div className="contentWrapper">
-        <div className="menuContenedor">
-          <nav className="menuCategorias">
-            {categorias.map((cat) => (
-              <button
-                key={cat}
-                className={`btnCategoria ${filtro === cat ? 'activo' : ''}`}
-                onClick={() => setFiltro(cat)}
-              >
-                {cat}
-              </button>
-            ))}
-          </nav>
-        </div>
+      <div className="menuContenedor">
+        <nav className="menuCategorias">
+          {categorias.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              className={`btnCategoria ${filtro === cat ? 'activo' : ''}`}
+              onClick={() => setFiltro(cat)}
+            >
+              {cat}
+            </button>
+          ))}
+        </nav>
+      </div>
 
+      <div className="contentWrapper">
         {cargando ? (
           <div className="estadoVacio">
             <p>Conectando al atelier...</p>
@@ -182,7 +183,7 @@ export default function Home() {
           padding: 0;
           display: flex;
           flex-direction: column;
-          overflow-x: hidden;
+          overflow-x: clip;
         }
 
         .bgContenedor {
@@ -259,24 +260,17 @@ export default function Home() {
           text-align: center;
         }
 
-        .contentWrapper {
-          position: relative;
-          background: transparent;
-          padding: 0 5% 40px;
-          max-width: 1280px;
-          margin: 0 auto;
-          z-index: 20;
-          flex-grow: 1;
-        }
-
         .menuContenedor {
           position: sticky;
           top: 20px;
-          z-index: 90;
+          z-index: 300;
           display: flex;
           justify-content: center;
+          width: 100%;
           margin-bottom: 60px;
-          padding-top: 10px;
+          padding: 10px 5% 0;
+          background: transparent;
+          box-sizing: border-box;
         }
 
         .menuCategorias {
@@ -314,6 +308,18 @@ export default function Home() {
         .btnCategoria.activo {
           color: #4a1e23;
           border-bottom: 1px solid #4a1e23;
+        }
+
+        .contentWrapper {
+          position: relative;
+          background: transparent;
+          padding: 0 5% 40px;
+          max-width: 1280px;
+          width: 100%;
+          margin: 0 auto;
+          z-index: 20;
+          flex-grow: 1;
+          box-sizing: border-box;
         }
 
         .estadoVacio {
@@ -511,6 +517,7 @@ export default function Home() {
           .menuContenedor {
             top: 10px;
             margin-bottom: 40px;
+            padding: 10px 15px 0;
           }
 
           .menuCategorias {
