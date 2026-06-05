@@ -25,6 +25,10 @@ export default function Home() {
   const [filtro, setFiltro] = useState('Todas');
   const [menuFijo, setMenuFijo] = useState(false);
   const [menuHeight, setMenuHeight] = useState(0);
+  const [joyaSeleccionada, setJoyaSeleccionada] = useState<Joya | null>(null);
+  const [bolsa, setBolsa] = useState<Joya[]>([]);
+  const [bolsaAbierta, setBolsaAbierta] = useState(false);
+  const [mensajeCopiado, setMensajeCopiado] = useState(false);
 
   const bgWatermarkRef = useRef<HTMLImageElement>(null);
   const heroRef = useRef<HTMLElement>(null);
@@ -111,10 +115,8 @@ export default function Home() {
 
       if (menuPlaceholderRef.current && menuRef.current) {
         const topOffset = window.innerWidth <= 768 ? 10 : 18;
-
         const menuInicio =
           menuPlaceholderRef.current.getBoundingClientRect().top + window.scrollY;
-
         const alturaMenu = menuRef.current.offsetHeight;
 
         setMenuHeight((actual) => (actual === alturaMenu ? actual : alturaMenu));
@@ -172,12 +174,38 @@ export default function Home() {
     return () => observer.disconnect();
   }, [joyas, cargando, filtro]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setJoyaSeleccionada(null);
+        setBolsaAbierta(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const normalizarTexto = (texto: string | null | undefined) =>
     String(texto ?? '')
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .trim();
+
+  const mostrarPrecio = (precio: string | number) => {
+    const texto = String(precio).trim();
+    return texto.startsWith('$') ? texto : `$${texto}`;
+  };
+
+  const precioNumero = (precio: string | number) => {
+    const limpio = String(precio).replace(/[^\d.]/g, '');
+    const numero = Number(limpio);
+    return Number.isFinite(numero) ? numero : 0;
+  };
+
+  const totalBolsa = bolsa.reduce((total, joya) => total + precioNumero(joya.precio), 0);
 
   const joyasFiltradas =
     filtro === 'Todas'
@@ -203,6 +231,98 @@ export default function Home() {
       block: 'start',
     });
   };
+
+  const agregarABolsa = (joya: Joya) => {
+    setBolsa((actual) => {
+      const existe = actual.some((item) => item.id === joya.id);
+
+      if (existe) {
+        return actual;
+      }
+
+      return [...actual, joya];
+    });
+
+    setMensajeCopiado(false);
+  };
+
+  const quitarDeBolsa = (id: number) => {
+    setBolsa((actual) => actual.filter((joya) => joya.id !== id));
+    setMensajeCopiado(false);
+  };
+
+  const crearMensajeConsulta = (items: Joya[]) => {
+    if (items.length === 1) {
+      const joya = items[0];
+
+      return `Hola, me interesa esta pieza de Atheliers:
+
+${joya.nombre}
+Categoría: ${joya.categoria}
+Precio: ${mostrarPrecio(joya.precio)}
+
+¿Me puedes compartir disponibilidad?`;
+    }
+
+    const lista = items
+      .map(
+        (joya, index) =>
+          `${index + 1}. ${joya.nombre} - ${joya.categoria} - ${mostrarPrecio(joya.precio)}`
+      )
+      .join('\n');
+
+    return `Hola, me interesan estas piezas de Atheliers:
+
+${lista}
+
+Total estimado: ${mostrarPrecio(totalBolsa)}
+
+¿Me puedes compartir disponibilidad?`;
+  };
+
+  const copiarMensajeYAbrirInstagram = async (items: Joya[]) => {
+    if (items.length === 0) {
+      return;
+    }
+
+    const mensaje = crearMensajeConsulta(items);
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(mensaje);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = mensaje;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        textArea.style.top = '0';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+
+      setMensajeCopiado(true);
+    } catch (error) {
+      console.error('No se pudo copiar el mensaje:', error);
+      setMensajeCopiado(false);
+    }
+
+    setTimeout(() => {
+      window.open('https://ig.me/m/cn.atheliers', '_blank', 'noopener,noreferrer');
+    }, 250);
+  };
+
+  const consultarJoya = (joya: Joya) => {
+    copiarMensajeYAbrirInstagram([joya]);
+  };
+
+  const consultarBolsa = () => {
+    copiarMensajeYAbrirInstagram(bolsa);
+  };
+
+  const joyaEnBolsa = (id: number) => bolsa.some((joya) => joya.id === id);
 
   return (
     <main className="page">
@@ -320,6 +440,14 @@ export default function Home() {
                   key={joya.id}
                   className="card revealCard"
                   style={{ transitionDelay: `${(index % 4) * 70}ms` }}
+                  onClick={() => setJoyaSeleccionada(joya)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      setJoyaSeleccionada(joya);
+                    }
+                  }}
                 >
                   <div className="imageBox">
                     <img src={joya.imagen} alt={joya.nombre} />
@@ -331,8 +459,19 @@ export default function Home() {
                       <p className="category">{joya.categoria}</p>
                     </div>
 
-                    <p className="price">${joya.precio}</p>
+                    <p className="price">{mostrarPrecio(joya.precio)}</p>
                   </div>
+
+                  <button
+                    className="btnDetalle"
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setJoyaSeleccionada(joya);
+                    }}
+                  >
+                    Ver pieza
+                  </button>
                 </article>
               ))}
             </section>
@@ -361,6 +500,30 @@ export default function Home() {
       </footer>
 
       <button
+        className={`btnBolsa ${bolsa.length === 0 ? 'vacia' : ''}`}
+        type="button"
+        onClick={() => {
+          setBolsaAbierta(true);
+          setMensajeCopiado(false);
+        }}
+        aria-label="Abrir bolsa de consulta"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M6 8h12l-1 13H7L6 8z"></path>
+          <path d="M9 8a3 3 0 0 1 6 0"></path>
+        </svg>
+        <span>Bolsa</span>
+        <strong>{bolsa.length}</strong>
+      </button>
+
+      <button
         className="btnFlotanteInsta"
         onClick={handleInstagramClick}
         aria-label="Enviar mensaje"
@@ -380,6 +543,136 @@ export default function Home() {
 
         <span>DM</span>
       </button>
+
+      {joyaSeleccionada && (
+        <div className="modalOverlay" onClick={() => setJoyaSeleccionada(null)}>
+          <section className="modalProducto" onClick={(event) => event.stopPropagation()}>
+            <button
+              className="btnCerrar"
+              type="button"
+              onClick={() => setJoyaSeleccionada(null)}
+              aria-label="Cerrar"
+            >
+              ×
+            </button>
+
+            <div className="modalImagen">
+              <img src={joyaSeleccionada.imagen} alt={joyaSeleccionada.nombre} />
+            </div>
+
+            <div className="modalInfo">
+              <p className="modalCategoria">{joyaSeleccionada.categoria}</p>
+              <h3>{joyaSeleccionada.nombre}</h3>
+              <p className="modalPrecio">{mostrarPrecio(joyaSeleccionada.precio)}</p>
+
+              <p className="modalDescripcion">
+                Pieza seleccionada de la colección Atheliers. Puedes consultar
+                disponibilidad directamente por Instagram.
+              </p>
+
+              <p className="notaConsulta">
+                El mensaje de esta pieza se copiará para que puedas pegarlo en Instagram.
+              </p>
+
+              <div className="modalAcciones">
+                <button
+                  className="btnModal principal"
+                  type="button"
+                  onClick={() => agregarABolsa(joyaSeleccionada)}
+                >
+                  {joyaEnBolsa(joyaSeleccionada.id) ? 'En bolsa' : 'Agregar a bolsa'}
+                </button>
+
+                <button
+                  className="btnModal secundario"
+                  type="button"
+                  onClick={() => consultarJoya(joyaSeleccionada)}
+                >
+                  Consultar pieza
+                </button>
+              </div>
+
+              {mensajeCopiado && (
+                <p className="mensajeCopiado">
+                  Mensaje copiado. Pégalo en Instagram para enviar tu consulta.
+                </p>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
+
+      {bolsaAbierta && (
+        <div className="modalOverlay" onClick={() => setBolsaAbierta(false)}>
+          <section className="panelBolsa" onClick={(event) => event.stopPropagation()}>
+            <button
+              className="btnCerrar"
+              type="button"
+              onClick={() => setBolsaAbierta(false)}
+              aria-label="Cerrar"
+            >
+              ×
+            </button>
+
+            <div className="bolsaHeader">
+              <p>Bolsa de consulta</p>
+              <h3>Piezas seleccionadas</h3>
+              <span>{bolsa.length} pieza{bolsa.length === 1 ? '' : 's'} en tu bolsa</span>
+            </div>
+
+            <div className="bolsaLista">
+              {bolsa.length === 0 ? (
+                <div className="bolsaVacia">
+                  <p>Tu bolsa está vacía.</p>
+                  <span>Agrega piezas del catálogo para consultarlas por Instagram.</span>
+                </div>
+              ) : (
+                bolsa.map((joya) => (
+                  <div key={joya.id} className="bolsaItem">
+                    <img src={joya.imagen} alt={joya.nombre} />
+
+                    <div>
+                      <h4>{joya.nombre}</h4>
+                      <p>{joya.categoria}</p>
+                      <span>{mostrarPrecio(joya.precio)}</span>
+                    </div>
+
+                    <button type="button" onClick={() => quitarDeBolsa(joya.id)}>
+                      Quitar
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="bolsaFooter">
+              <div>
+                <span>Total estimado</span>
+                <strong>{mostrarPrecio(totalBolsa)}</strong>
+              </div>
+
+              <p className="notaConsulta bolsaNota">
+                Copiaremos tu selección para que puedas pegarla en el chat de Instagram.
+              </p>
+
+              <button
+                className="btnConsultarBolsa"
+                type="button"
+                onClick={consultarBolsa}
+                disabled={bolsa.length === 0}
+              >
+                Consultar por Instagram
+              </button>
+
+              {mensajeCopiado && (
+                <p className="mensajeCopiado">
+                  Mensaje copiado. Pégalo en Instagram para enviar tu consulta.
+                </p>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
 
       <style jsx>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&display=swap');
@@ -889,10 +1182,17 @@ export default function Home() {
             transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
             opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1);
           will-change: transform;
+          cursor: pointer;
+          outline: none;
         }
 
         .card:hover {
           transform: translateY(-10px);
+        }
+
+        .card:focus-visible {
+          outline: 1px solid rgba(74, 30, 35, 0.35);
+          outline-offset: 8px;
         }
 
         .imageBox {
@@ -989,6 +1289,33 @@ export default function Home() {
         .card:hover .price {
           transform: translateY(-1px);
           color: #3a171b;
+        }
+
+        .btnDetalle {
+          margin: 8px 5px 0;
+          background: transparent;
+          border: none;
+          padding: 0;
+          color: #9a6a5e;
+          font-size: 0.68rem;
+          text-transform: uppercase;
+          letter-spacing: 1.8px;
+          cursor: pointer;
+          opacity: 0;
+          transform: translateY(8px);
+          transition:
+            opacity 0.35s ease,
+            transform 0.35s ease,
+            color 0.35s ease;
+        }
+
+        .card:hover .btnDetalle {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .btnDetalle:hover {
+          color: #4a1e23;
         }
 
         .revealItem {
@@ -1091,15 +1418,12 @@ export default function Home() {
           transform: translateY(-1px);
         }
 
+        .btnBolsa,
         .btnFlotanteInsta {
           position: fixed;
           bottom: 30px;
-          right: 30px;
-          background: #3a171b;
-          color: #f9f5f1;
           border: none;
           border-radius: 50px;
-          padding: 14px 24px;
           display: flex;
           align-items: center;
           gap: 10px;
@@ -1109,8 +1433,58 @@ export default function Home() {
           letter-spacing: 1px;
           cursor: pointer;
           z-index: 1200;
-          box-shadow: 0 8px 25px rgba(58, 23, 27, 0.25);
           transition: all 0.3s ease;
+        }
+
+        .btnBolsa {
+          left: 30px;
+          background: rgba(255, 253, 251, 0.9);
+          color: #3a171b;
+          border: 1px solid rgba(74, 30, 35, 0.1);
+          padding: 14px 20px;
+          box-shadow: 0 8px 25px rgba(58, 23, 27, 0.12);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+        }
+
+        .btnBolsa:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 12px 30px rgba(58, 23, 27, 0.18);
+        }
+
+        .btnBolsa.vacia {
+          opacity: 0.72;
+        }
+
+        .btnBolsa.vacia strong {
+          background: rgba(74, 30, 35, 0.12);
+          color: #4a1e23;
+        }
+
+        .btnBolsa svg,
+        .btnFlotanteInsta svg {
+          width: 20px;
+          height: 20px;
+        }
+
+        .btnBolsa strong {
+          display: grid;
+          place-items: center;
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          background: #4a1e23;
+          color: #fffdfb;
+          font-size: 0.72rem;
+          font-weight: 500;
+        }
+
+        .btnFlotanteInsta {
+          right: 30px;
+          background: #3a171b;
+          color: #f9f5f1;
+          padding: 14px 24px;
+          box-shadow: 0 8px 25px rgba(58, 23, 27, 0.25);
         }
 
         .btnFlotanteInsta:hover {
@@ -1119,9 +1493,327 @@ export default function Home() {
           background: #4a1e23;
         }
 
-        .btnFlotanteInsta svg {
-          width: 20px;
-          height: 20px;
+        .modalOverlay {
+          position: fixed;
+          inset: 0;
+          z-index: 2000;
+          background: rgba(58, 23, 27, 0.22);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 24px;
+          animation: overlayEntrada 0.35s ease both;
+        }
+
+        @keyframes overlayEntrada {
+          from {
+            opacity: 0;
+          }
+
+          to {
+            opacity: 1;
+          }
+        }
+
+        .modalProducto,
+        .panelBolsa {
+          position: relative;
+          width: min(960px, 100%);
+          max-height: min(820px, 90dvh);
+          overflow: auto;
+          background: rgba(255, 253, 251, 0.94);
+          border: 1px solid rgba(74, 30, 35, 0.08);
+          box-shadow: 0 28px 70px rgba(58, 23, 27, 0.22);
+          animation: modalEntrada 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .modalProducto {
+          display: grid;
+          grid-template-columns: 1fr 0.9fr;
+        }
+
+        .panelBolsa {
+          max-width: 680px;
+          padding: 42px;
+        }
+
+        @keyframes modalEntrada {
+          from {
+            opacity: 0;
+            transform: translateY(34px) scale(0.975);
+          }
+
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        .btnCerrar {
+          position: absolute;
+          top: 18px;
+          right: 18px;
+          z-index: 5;
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          border: 1px solid rgba(74, 30, 35, 0.1);
+          background: rgba(255, 253, 251, 0.82);
+          color: #4a1e23;
+          font-size: 1.5rem;
+          line-height: 1;
+          cursor: pointer;
+          transition:
+            transform 0.3s ease,
+            background 0.3s ease;
+        }
+
+        .btnCerrar:hover {
+          transform: rotate(90deg);
+          background: #fffdfb;
+        }
+
+        .modalImagen {
+          min-height: 620px;
+          background: #eee8e5;
+          overflow: hidden;
+        }
+
+        .modalImagen img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+
+        .modalInfo {
+          padding: 70px 48px 48px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        .modalCategoria,
+        .bolsaHeader p {
+          margin: 0 0 14px;
+          color: #9a6a5e;
+          font-size: 0.72rem;
+          text-transform: uppercase;
+          letter-spacing: 3px;
+        }
+
+        .modalInfo h3,
+        .bolsaHeader h3 {
+          margin: 0;
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-size: clamp(2.7rem, 5vw, 5rem);
+          font-weight: 300;
+          line-height: 0.98;
+          color: #4a1e23;
+        }
+
+        .modalPrecio {
+          margin: 22px 0 0;
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-size: 1.7rem;
+          color: #3a171b;
+        }
+
+        .modalDescripcion {
+          margin: 28px 0 0;
+          color: #7b6460;
+          line-height: 1.8;
+          font-size: 0.95rem;
+        }
+
+        .notaConsulta {
+          margin: 22px 0 0;
+          color: #9a6a5e;
+          font-size: 0.82rem;
+          line-height: 1.65;
+          font-style: italic;
+        }
+
+        .bolsaNota {
+          margin: 0;
+          text-align: center;
+        }
+
+        .modalAcciones {
+          margin-top: 24px;
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .btnModal,
+        .btnConsultarBolsa {
+          border-radius: 999px;
+          padding: 13px 22px;
+          font-size: 0.72rem;
+          text-transform: uppercase;
+          letter-spacing: 1.7px;
+          cursor: pointer;
+          transition:
+            transform 0.3s ease,
+            background 0.3s ease,
+            color 0.3s ease,
+            border-color 0.3s ease;
+        }
+
+        .btnModal:hover,
+        .btnConsultarBolsa:hover {
+          transform: translateY(-2px);
+        }
+
+        .btnModal.principal,
+        .btnConsultarBolsa {
+          background: #4a1e23;
+          color: #fffdfb;
+          border: 1px solid #4a1e23;
+        }
+
+        .btnModal.secundario {
+          background: transparent;
+          color: #4a1e23;
+          border: 1px solid rgba(74, 30, 35, 0.18);
+        }
+
+        .btnModal.secundario:hover {
+          background: #4a1e23;
+          color: #fffdfb;
+        }
+
+        .btnConsultarBolsa:disabled {
+          opacity: 0.45;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .btnConsultarBolsa:disabled:hover {
+          transform: none;
+        }
+
+        .mensajeCopiado {
+          margin: 18px 0 0;
+          color: #7b6460;
+          font-size: 0.82rem;
+          line-height: 1.6;
+        }
+
+        .bolsaHeader {
+          text-align: center;
+          margin-bottom: 34px;
+        }
+
+        .bolsaHeader h3 {
+          font-size: clamp(2.3rem, 5vw, 4rem);
+        }
+
+        .bolsaHeader span {
+          display: block;
+          margin-top: 14px;
+          color: #7b6460;
+          font-size: 0.92rem;
+        }
+
+        .bolsaLista {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .bolsaVacia {
+          text-align: center;
+          padding: 34px 20px;
+          border: 1px solid rgba(74, 30, 35, 0.08);
+          color: #7b6460;
+        }
+
+        .bolsaVacia p {
+          margin: 0 0 8px;
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-size: 1.6rem;
+          color: #4a1e23;
+        }
+
+        .bolsaVacia span {
+          font-size: 0.86rem;
+          line-height: 1.6;
+        }
+
+        .bolsaItem {
+          display: grid;
+          grid-template-columns: 74px 1fr auto;
+          gap: 16px;
+          align-items: center;
+          padding-bottom: 16px;
+          border-bottom: 1px solid rgba(74, 30, 35, 0.08);
+        }
+
+        .bolsaItem img {
+          width: 74px;
+          height: 92px;
+          object-fit: cover;
+          background: #eee8e5;
+        }
+
+        .bolsaItem h4 {
+          margin: 0;
+          font-size: 0.82rem;
+          text-transform: uppercase;
+          letter-spacing: 1.8px;
+          color: #4a1e23;
+        }
+
+        .bolsaItem p {
+          margin: 6px 0;
+          color: #a28b85;
+          font-size: 0.76rem;
+        }
+
+        .bolsaItem span {
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          color: #3a171b;
+          font-size: 1.1rem;
+        }
+
+        .bolsaItem button {
+          background: transparent;
+          border: none;
+          color: #9a6a5e;
+          cursor: pointer;
+          font-size: 0.72rem;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .bolsaItem button:hover {
+          color: #4a1e23;
+        }
+
+        .bolsaFooter {
+          margin-top: 28px;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+        }
+
+        .bolsaFooter > div {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: #7b6460;
+          font-size: 0.88rem;
+        }
+
+        .bolsaFooter strong {
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          color: #3a171b;
+          font-size: 1.45rem;
+          font-weight: 500;
         }
 
         @media (max-width: 768px) {
@@ -1236,15 +1928,85 @@ export default function Home() {
             gap: 8px;
           }
 
+          .btnDetalle {
+            opacity: 1;
+            transform: translateY(0);
+            font-size: 0.64rem;
+          }
+
           .footerBrand {
             max-width: 260px;
             line-height: 1.25;
+          }
+
+          .btnBolsa {
+            left: 20px;
+            bottom: 20px;
+            padding: 12px 16px;
+          }
+
+          .btnBolsa span {
+            display: none;
           }
 
           .btnFlotanteInsta {
             bottom: 20px;
             right: 20px;
             padding: 12px 20px;
+          }
+
+          .modalOverlay {
+            padding: 14px;
+            align-items: flex-end;
+          }
+
+          .modalProducto {
+            grid-template-columns: 1fr;
+            max-height: 92dvh;
+          }
+
+          .modalImagen {
+            min-height: 320px;
+            max-height: 420px;
+          }
+
+          .modalInfo {
+            padding: 36px 24px 28px;
+          }
+
+          .modalInfo h3 {
+            font-size: clamp(2.4rem, 11vw, 4rem);
+          }
+
+          .modalAcciones {
+            flex-direction: column;
+          }
+
+          .btnModal,
+          .btnConsultarBolsa {
+            width: 100%;
+          }
+
+          .panelBolsa {
+            padding: 38px 22px 24px;
+            max-height: 92dvh;
+          }
+
+          .bolsaItem {
+            grid-template-columns: 62px 1fr;
+            gap: 12px;
+            position: relative;
+          }
+
+          .bolsaItem img {
+            width: 62px;
+            height: 78px;
+          }
+
+          .bolsaItem button {
+            grid-column: 2;
+            justify-self: flex-start;
+            padding: 0;
           }
         }
       `}</style>
