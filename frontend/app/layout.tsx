@@ -14,14 +14,19 @@ const geistMono = Geist_Mono({
 
 export const viewport: Viewport = {
   viewportFit: "cover",
-  themeColor: "#f9f5f1",
+  themeColor: "#fffdfb",
   initialScale: 1,
   width: "device-width",
 };
 
 export const metadata: Metadata = {
-  title: "Atheliers | Joyeria Artesanal",
-  description: "Coleccion artesanal disenada para destacar cada detalle.",
+  title: "Atheliers | Joyería Artesanal",
+  description: "Colección artesanal diseñada para destacar cada detalle.",
+  appleWebApp: {
+    capable: true,
+    title: "Atheliers",
+    statusBarStyle: "default",
+  },
 };
 
 export default function RootLayout({
@@ -34,7 +39,9 @@ export default function RootLayout({
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#fffdfb]">
+        {children}
+      </body>
     </html>
   );
 }
