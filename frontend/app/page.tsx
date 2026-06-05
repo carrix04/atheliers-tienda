@@ -46,7 +46,7 @@ export default function Home() {
       titulo: 'Diseño artesanal',
       categoria: 'Atheliers',
       descripcion: 'Piezas pensadas para lucir con elegancia sin exceso.',
-      imagen: '/galeria1.jpg',
+      imagen: '/galeria2.jpg',
     },
     {
       id: 2,
@@ -60,7 +60,7 @@ export default function Home() {
       titulo: 'Detalles únicos',
       categoria: 'Atheliers',
       descripcion: 'Una mirada previa antes de explorar el catálogo completo.',
-      imagen: '/galeria2.jpg',
+      imagen: '/galeria6.jpg',
     },
   ];
 
