@@ -594,8 +594,8 @@ export default function Home() {
           position: relative;
           z-index: 15;
           width: 100%;
-          max-width: 1120px;
-          margin: 0 auto 125px;
+          max-width: 1280px;
+          margin: 0 auto 135px;
           padding: 22px 5% 0;
           box-sizing: border-box;
           scroll-margin-top: 70px;
@@ -603,7 +603,7 @@ export default function Home() {
 
         .showcaseIntro {
           text-align: center;
-          margin: 0 auto 38px;
+          margin: 0 auto 42px;
           max-width: 620px;
         }
 
@@ -628,9 +628,9 @@ export default function Home() {
 
         .showcaseGrid {
           display: grid;
-          grid-template-columns: 1.18fr 0.82fr;
-          grid-template-rows: 225px 225px;
-          gap: 18px;
+          grid-template-columns: 1.2fr 0.8fr;
+          grid-template-rows: 285px 285px;
+          gap: 22px;
         }
 
         .featurePanel {
@@ -1153,6 +1153,7 @@ export default function Home() {
           }
 
           .showcase {
+            max-width: 1120px;
             margin: 0 auto 92px;
             padding: 28px 15px 0;
           }
