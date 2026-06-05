@@ -29,6 +29,7 @@ export default function Home() {
   const [bolsa, setBolsa] = useState<Joya[]>([]);
   const [bolsaAbierta, setBolsaAbierta] = useState(false);
   const [mensajeCopiado, setMensajeCopiado] = useState(false);
+  const [bolsaAnimada, setBolsaAnimada] = useState(false);
 
   const bgWatermarkRef = useRef<HTMLImageElement>(null);
   const heroRef = useRef<HTMLElement>(null);
@@ -45,21 +46,21 @@ export default function Home() {
       titulo: 'Diseño artesanal',
       categoria: 'Atheliers',
       descripcion: 'Piezas pensadas para lucir con elegancia sin exceso.',
-      imagen: '/logo.png',
+      imagen: '/galeria1.jpg',
     },
     {
       id: 2,
       titulo: 'Elegancia minimalista',
       categoria: 'Atheliers',
       descripcion: 'Formas limpias, tonos suaves y detalles delicados.',
-      imagen: '/logo.png',
+      imagen: '/galeria3.jpg',
     },
     {
       id: 3,
       titulo: 'Detalles únicos',
       categoria: 'Atheliers',
       descripcion: 'Una mirada previa antes de explorar el catálogo completo.',
-      imagen: '/logo.png',
+      imagen: '/galeria2.jpg',
     },
   ];
 
@@ -194,6 +195,16 @@ export default function Home() {
       .replace(/[\u0300-\u036f]/g, '')
       .trim();
 
+  const optimizarImagen = (url: string, ancho = 900) => {
+    if (!url) return '';
+
+    if (url.includes('res.cloudinary.com') && url.includes('/upload/')) {
+      return url.replace('/upload/', `/upload/f_auto,q_auto,w_${ancho}/`);
+    }
+
+    return url;
+  };
+
   const mostrarPrecio = (precio: string | number) => {
     const texto = String(precio).trim();
     return texto.startsWith('$') ? texto : `$${texto}`;
@@ -233,17 +244,19 @@ export default function Home() {
   };
 
   const agregarABolsa = (joya: Joya) => {
-    setBolsa((actual) => {
-      const existe = actual.some((item) => item.id === joya.id);
+    const existe = bolsa.some((item) => item.id === joya.id);
 
-      if (existe) {
-        return actual;
-      }
+    if (existe) {
+      return;
+    }
 
-      return [...actual, joya];
-    });
-
+    setBolsa((actual) => [...actual, joya]);
+    setBolsaAnimada(true);
     setMensajeCopiado(false);
+
+    setTimeout(() => {
+      setBolsaAnimada(false);
+    }, 520);
   };
 
   const quitarDeBolsa = (id: number) => {
@@ -378,7 +391,13 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
               className={`featurePanel featurePanel${item.id} revealItem`}
               style={{ transitionDelay: `${index * 140}ms` }}
             >
-              <img className="featureImage" src={item.imagen} alt={item.titulo} />
+              <img
+                className="featureImage"
+                src={item.imagen}
+                alt={item.titulo}
+                loading="lazy"
+                decoding="async"
+              />
 
               <div className="featureOverlay"></div>
 
@@ -422,9 +441,18 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
 
         <div className="contentWrapper">
           {cargando ? (
-            <div className="estadoVacio">
-              <p>Conectando al atelier...</p>
-            </div>
+            <section className="gallery skeletonGrid" aria-label="Cargando catálogo">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <article key={index} className="skeletonCard">
+                  <div className="skeletonImage"></div>
+
+                  <div className="skeletonInfo">
+                    <div className="skeletonLine large"></div>
+                    <div className="skeletonLine small"></div>
+                  </div>
+                </article>
+              ))}
+            </section>
           ) : errorCarga ? (
             <div className="estadoVacio">
               <p>No se pudo conectar con el catálogo.</p>
@@ -450,7 +478,12 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
                   }}
                 >
                   <div className="imageBox">
-                    <img src={joya.imagen} alt={joya.nombre} />
+                    <img
+                      src={optimizarImagen(joya.imagen, 700)}
+                      alt={joya.nombre}
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </div>
 
                   <div className="info">
@@ -500,7 +533,9 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
       </footer>
 
       <button
-        className={`btnBolsa ${bolsa.length === 0 ? 'vacia' : ''}`}
+        className={`btnBolsa ${bolsa.length === 0 ? 'vacia' : ''} ${
+          bolsaAnimada ? 'animada' : ''
+        }`}
         type="button"
         onClick={() => {
           setBolsaAbierta(true);
@@ -557,7 +592,12 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
             </button>
 
             <div className="modalImagen">
-              <img src={joyaSeleccionada.imagen} alt={joyaSeleccionada.nombre} />
+              <img
+                src={optimizarImagen(joyaSeleccionada.imagen, 1200)}
+                alt={joyaSeleccionada.nombre}
+                loading="eager"
+                decoding="async"
+              />
             </div>
 
             <div className="modalInfo">
@@ -629,7 +669,12 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
               ) : (
                 bolsa.map((joya) => (
                   <div key={joya.id} className="bolsaItem">
-                    <img src={joya.imagen} alt={joya.nombre} />
+                    <img
+                      src={optimizarImagen(joya.imagen, 220)}
+                      alt={joya.nombre}
+                      loading="lazy"
+                      decoding="async"
+                    />
 
                     <div>
                       <h4>{joya.nombre}</h4>
@@ -945,9 +990,9 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
           object-fit: cover;
           border: none;
           z-index: 1;
-          transform: scale(1.08);
-          opacity: 0.7;
-          filter: saturate(0.82) brightness(1.04);
+          transform: scale(1.06);
+          opacity: 1;
+          filter: saturate(1.04) brightness(1.03) contrast(1.04);
           transition:
             transform 1.35s cubic-bezier(0.16, 1, 0.3, 1),
             opacity 1.15s cubic-bezier(0.16, 1, 0.3, 1),
@@ -958,70 +1003,98 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
           position: absolute;
           inset: 0;
           z-index: 2;
-          background: linear-gradient(
-            180deg,
-            rgba(252, 250, 249, 0.08),
-            rgba(252, 250, 249, 0.42)
-          );
+          background: transparent;
           pointer-events: none;
         }
 
         .featureContent {
           position: absolute;
-          left: clamp(24px, 5vw, 58px);
-          bottom: clamp(24px, 4.5vw, 52px);
+          top: clamp(22px, 3vw, 36px);
+          left: clamp(22px, 3.5vw, 44px);
+          bottom: auto;
           z-index: 3;
-          max-width: 430px;
-          color: #4a1e23;
+          max-width: 315px;
+          padding: 15px 17px 16px;
+          color: #fffdfb;
           opacity: 0;
-          transform: translateY(38px);
-          text-shadow: 0 16px 42px rgba(252, 250, 248, 0.88);
+          transform: translateY(28px);
+          text-shadow:
+            0 1px 1px rgba(58, 23, 27, 0.2),
+            0 10px 28px rgba(58, 23, 27, 0.35);
+          isolation: isolate;
           transition:
             opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
             transform 1.05s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        .featureContent::before {
+          content: '';
+          position: absolute;
+          inset: -12px -18px -13px -16px;
+          z-index: -1;
+          border-radius: 22px;
+          background:
+            radial-gradient(
+              circle at 16% 12%,
+              rgba(58, 23, 27, 0.5),
+              rgba(58, 23, 27, 0.28) 42%,
+              rgba(58, 23, 27, 0.1) 68%,
+              transparent 100%
+            );
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          opacity: 0.95;
+        }
+
         .featureContent p {
-          margin: 0 0 10px;
-          font-size: 0.68rem;
+          margin: 0 0 8px;
+          font-size: 0.58rem;
           text-transform: uppercase;
-          letter-spacing: 2.8px;
-          color: #9a6a5e;
+          letter-spacing: 2.6px;
+          color: rgba(255, 253, 251, 0.82);
         }
 
         .featureContent h3 {
           margin: 0;
           font-family: 'Cormorant Garamond', Georgia, serif;
-          font-size: clamp(2.2rem, 5vw, 5.4rem);
+          font-size: clamp(1.55rem, 3vw, 2.9rem);
           font-weight: 300;
-          line-height: 0.94;
-          letter-spacing: 1px;
+          line-height: 0.96;
+          letter-spacing: 0.5px;
+          color: #fffdfb;
         }
 
         .featureContent span {
           display: block;
-          margin-top: 14px;
-          max-width: 360px;
-          font-size: 0.92rem;
-          line-height: 1.65;
-          color: #7b6460;
+          margin-top: 10px;
+          max-width: 270px;
+          font-size: 0.78rem;
+          line-height: 1.55;
+          color: rgba(255, 253, 251, 0.82);
           font-weight: 300;
         }
 
         .featurePanel2 .featureContent,
         .featurePanel3 .featureContent {
-          max-width: 330px;
+          max-width: 275px;
+          padding: 13px 15px 14px;
         }
 
         .featurePanel2 .featureContent h3,
         .featurePanel3 .featureContent h3 {
-          font-size: clamp(1.9rem, 3.2vw, 3.2rem);
+          font-size: clamp(1.35rem, 2.2vw, 2.15rem);
+        }
+
+        .featurePanel2 .featureContent span,
+        .featurePanel3 .featureContent span {
+          font-size: 0.74rem;
+          max-width: 235px;
         }
 
         .featurePanel.visible .featureImage {
           transform: scale(1);
           opacity: 1;
-          filter: saturate(1) brightness(1);
+          filter: saturate(1.08) brightness(1.04) contrast(1.05);
         }
 
         .featurePanel.visible .featureContent {
@@ -1171,6 +1244,63 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
           gap: 60px 46px;
+        }
+
+        .skeletonGrid {
+          pointer-events: none;
+        }
+
+        .skeletonCard {
+          background: transparent;
+        }
+
+        .skeletonImage {
+          aspect-ratio: 3 / 4;
+          border-radius: 12px;
+          background: linear-gradient(
+            90deg,
+            rgba(238, 232, 229, 0.65),
+            rgba(255, 253, 251, 0.95),
+            rgba(238, 232, 229, 0.65)
+          );
+          background-size: 240% 100%;
+          animation: skeletonShimmer 1.8s ease-in-out infinite;
+        }
+
+        .skeletonInfo {
+          padding: 18px 5px 5px;
+        }
+
+        .skeletonLine {
+          height: 10px;
+          border-radius: 999px;
+          background: linear-gradient(
+            90deg,
+            rgba(238, 232, 229, 0.7),
+            rgba(255, 253, 251, 1),
+            rgba(238, 232, 229, 0.7)
+          );
+          background-size: 240% 100%;
+          animation: skeletonShimmer 1.8s ease-in-out infinite;
+        }
+
+        .skeletonLine.large {
+          width: 62%;
+        }
+
+        .skeletonLine.small {
+          width: 38%;
+          margin-top: 10px;
+        }
+
+        @keyframes skeletonShimmer {
+          0% {
+            background-position: 100% 0;
+          }
+
+          100% {
+            background-position: -100% 0;
+          }
         }
 
         .card {
@@ -1459,6 +1589,42 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
         .btnBolsa.vacia strong {
           background: rgba(74, 30, 35, 0.12);
           color: #4a1e23;
+        }
+
+        .btnBolsa.animada {
+          animation: bolsaPop 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btnBolsa.animada strong {
+          animation: contadorPop 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes bolsaPop {
+          0% {
+            transform: translateY(0) scale(1);
+          }
+
+          45% {
+            transform: translateY(-6px) scale(1.035);
+          }
+
+          100% {
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        @keyframes contadorPop {
+          0% {
+            transform: scale(1);
+          }
+
+          45% {
+            transform: scale(1.28);
+          }
+
+          100% {
+            transform: scale(1);
+          }
         }
 
         .btnBolsa svg,
@@ -1871,24 +2037,29 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
             min-height: 380px;
           }
 
-          .featureContent {
+          .featureContent,
+          .featurePanel2 .featureContent,
+          .featurePanel3 .featureContent {
+            top: 22px;
             left: 22px;
             right: 22px;
-            bottom: 26px;
+            bottom: auto;
+            max-width: 270px;
+            padding: 13px 15px 14px;
           }
 
-          .featureContent h3 {
-            font-size: clamp(2.4rem, 11vw, 4.4rem);
-          }
-
+          .featureContent h3,
           .featurePanel2 .featureContent h3,
           .featurePanel3 .featureContent h3 {
-            font-size: clamp(2.1rem, 9vw, 3.4rem);
+            font-size: clamp(1.55rem, 8vw, 2.7rem);
           }
 
-          .featureContent span {
-            font-size: 0.9rem;
-            margin-top: 12px;
+          .featureContent span,
+          .featurePanel2 .featureContent span,
+          .featurePanel3 .featureContent span {
+            font-size: 0.74rem;
+            margin-top: 9px;
+            max-width: 235px;
           }
 
           .catalogoIntro {
