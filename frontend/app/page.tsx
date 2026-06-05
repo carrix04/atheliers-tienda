@@ -21,7 +21,7 @@ export default function Home() {
 
   useEffect(() => {
     fetch('https://atheliers-backend.onrender.com/api/joyas/', {
-      cache: 'no-store'
+      cache: 'no-store',
     })
       .then((res) => res.json())
       .then((data) => {
@@ -35,11 +35,13 @@ export default function Home() {
 
     const handleScroll = () => {
       const scroll = window.scrollY;
-      
+
       if (bgWatermarkRef.current) {
-        bgWatermarkRef.current.style.transform = `translate(-50%, calc(-50% + ${scroll * 0.1}px))`;
+        bgWatermarkRef.current.style.transform = `translate(-50%, calc(-50% + ${
+          scroll * 0.1
+        }px))`;
       }
-      
+
       if (heroRef.current) {
         heroRef.current.style.transform = `translateY(${scroll * 0.3}px)`;
         heroRef.current.style.opacity = `${1 - scroll / 400}`;
@@ -50,11 +52,14 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const joyasFiltradas = filtro === 'Todas'
-    ? joyas
-    : joyas.filter(joya =>
-        joya.categoria.toLowerCase().trim() === filtro.toLowerCase().trim()
-      );
+  const joyasFiltradas =
+    filtro === 'Todas'
+      ? joyas
+      : joyas.filter(
+          (joya) =>
+            joya.categoria.toLowerCase().trim() ===
+            filtro.toLowerCase().trim()
+        );
 
   const handleInstagramClick = () => {
     window.open('https://ig.me/m/cn.atheliers', '_blank');
@@ -74,8 +79,11 @@ export default function Home() {
 
       <section className="hero" ref={heroRef}>
         <p className="eyebrow">Coleccion artesanal</p>
+
         <h1>Atheliers</h1>
+
         <div className="line"></div>
+
         <p className="subtitle">
           Joyeria elegante, minimalista y disenada para destacar cada detalle.
         </p>
@@ -129,18 +137,37 @@ export default function Home() {
       <footer className="piePagina">
         <div className="contenidoPie">
           <p>&copy; 2026 Atheliers. Todos los derechos reservados.</p>
+
           <div className="redes">
-            <a href="https://instagram.com/cn.atheliers" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a
+              href="https://instagram.com/cn.atheliers"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Instagram
+            </a>
           </div>
         </div>
       </footer>
 
-      <button className="btnFlotanteInsta" onClick={handleInstagramClick} aria-label="Enviar mensaje por Instagram">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <button
+        className="btnFlotanteInsta"
+        onClick={handleInstagramClick}
+        aria-label="Enviar mensaje por Instagram"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
           <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
           <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
         </svg>
+
         <span>DM</span>
       </button>
 
@@ -318,8 +345,15 @@ export default function Home() {
         }
 
         @keyframes fadeSutil {
-          0% { opacity: 0; transform: translateY(20px); }
-          100% { opacity: 1; transform: translateY(0); }
+          0% {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         .card:hover {
@@ -387,28 +421,37 @@ export default function Home() {
         .piePagina {
           position: relative;
           z-index: 20;
+          width: 100%;
+          box-sizing: border-box;
           border-top: 1px solid rgba(74, 30, 35, 0.08);
           padding: 40px 5% 90px;
           margin-top: auto;
         }
 
         .contenidoPie {
+          width: 100%;
           max-width: 1280px;
           margin: 0 auto;
           display: flex;
           flex-direction: column;
           justify-content: center;
           align-items: center;
-          gap: 12px;
+          gap: 18px;
           font-size: 0.8rem;
           color: #a28b85;
           font-family: 'system-ui', -apple-system, sans-serif;
+          text-align: center;
+        }
+
+        .contenidoPie p {
+          margin: 0;
         }
 
         .redes {
           display: flex;
           gap: 24px;
           justify-content: center;
+          align-items: center;
         }
 
         .redes a {
@@ -460,36 +503,40 @@ export default function Home() {
           .hero {
             padding: 18vh 20px 8vh;
           }
+
           h1 {
             font-size: clamp(3.5rem, 15vw, 5rem);
           }
+
           .menuContenedor {
             top: 10px;
             margin-bottom: 40px;
           }
+
           .menuCategorias {
             gap: 15px;
             padding: 12px 20px;
           }
+
           .btnCategoria {
             font-size: 0.75rem;
             letter-spacing: 1px;
           }
+
           .contentWrapper {
             padding: 0 15px 40px;
           }
+
           .gallery {
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 20px 15px;
           }
+
           .info {
             flex-direction: column;
             gap: 8px;
           }
-          .contenidoPie {
-            flex-direction: column;
-            text-align: center;
-          }
+
           .btnFlotanteInsta {
             bottom: 20px;
             right: 20px;
