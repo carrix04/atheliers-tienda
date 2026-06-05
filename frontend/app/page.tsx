@@ -25,11 +25,9 @@ export default function Home() {
   const [filtro, setFiltro] = useState('Todas');
   const [menuFijo, setMenuFijo] = useState(false);
   const [menuHeight, setMenuHeight] = useState(0);
-  const [catalogoActivo, setCatalogoActivo] = useState(false);
 
   const bgWatermarkRef = useRef<HTMLImageElement>(null);
   const heroRef = useRef<HTMLElement>(null);
-  const showcaseRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuPlaceholderRef = useRef<HTMLDivElement>(null);
 
@@ -38,7 +36,7 @@ export default function Home() {
   const galeriaPreview: GaleriaItem[] = [
     {
       id: 1,
-      titulo: 'Diseno artesanal',
+      titulo: 'Diseño artesanal',
       categoria: 'Atheliers',
       descripcion: 'Piezas pensadas para lucir con elegancia sin exceso.',
       imagen: '/logo.png',
@@ -52,9 +50,9 @@ export default function Home() {
     },
     {
       id: 3,
-      titulo: 'Detalles unicos',
+      titulo: 'Detalles únicos',
       categoria: 'Atheliers',
-      descripcion: 'Una mirada previa antes de explorar el catalogo completo.',
+      descripcion: 'Una mirada previa antes de explorar el catálogo completo.',
       imagen: '/logo.png',
     },
   ];
@@ -102,37 +100,19 @@ export default function Home() {
 
       if (bgWatermarkRef.current) {
         bgWatermarkRef.current.style.transform = `translate(-50%, calc(-50% + ${
-          scroll * 0.1
+          scroll * 0.08
         }px))`;
       }
 
       if (heroRef.current) {
-        const opacity = Math.max(0, 1 - scroll / 220);
-        heroRef.current.style.transform = `translateY(${scroll * 0.35}px)`;
+        const opacity = Math.max(0, 1 - scroll / 520);
+        heroRef.current.style.transform = `translateY(${scroll * 0.18}px)`;
         heroRef.current.style.opacity = opacity.toString();
-        heroRef.current.style.pointerEvents = opacity === 0 ? 'none' : 'auto';
-      }
-
-      const inicioGaleria = 35;
-      const salidaGaleria = window.innerWidth <= 768 ? 250 : 270;
-
-      if (showcaseRef.current) {
-        if (scroll <= inicioGaleria) {
-          showcaseRef.current.classList.remove('is-visible', 'is-hidden-up');
-          setCatalogoActivo((actual) => (actual === false ? actual : false));
-        } else if (scroll > inicioGaleria && scroll <= salidaGaleria) {
-          showcaseRef.current.classList.add('is-visible');
-          showcaseRef.current.classList.remove('is-hidden-up');
-          setCatalogoActivo((actual) => (actual === false ? actual : false));
-        } else {
-          showcaseRef.current.classList.remove('is-visible');
-          showcaseRef.current.classList.add('is-hidden-up');
-          setCatalogoActivo((actual) => (actual === true ? actual : true));
-        }
       }
 
       if (menuPlaceholderRef.current && menuRef.current) {
         const topOffset = window.innerWidth <= 768 ? 10 : 20;
+
         const menuInicio =
           menuPlaceholderRef.current.getBoundingClientRect().top +
           window.scrollY;
@@ -171,27 +151,29 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const elementos = Array.from(
+      document.querySelectorAll('.revealItem, .revealCard')
+    ) as HTMLElement[];
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          const elemento = entry.target as HTMLElement;
+
           if (entry.isIntersecting) {
-            entry.target.classList.add('card-visible');
+            elemento.classList.add('visible');
           } else {
-            entry.target.classList.remove('card-visible');
+            elemento.classList.remove('visible');
           }
         });
       },
       {
-        threshold: 0.05,
-        rootMargin: '0px 0px 50px 0px',
+        threshold: 0.16,
+        rootMargin: '0px 0px -40px 0px',
       }
     );
 
-    const cards = Array.from(
-      document.getElementsByClassName('reveal-card')
-    ) as HTMLElement[];
-
-    cards.forEach((card) => observer.observe(card));
+    elementos.forEach((elemento) => observer.observe(elemento));
 
     return () => observer.disconnect();
   }, [joyas, cargando, filtro]);
@@ -227,23 +209,24 @@ export default function Home() {
       </div>
 
       <section className="hero" ref={heroRef}>
-        <p className="eyebrow">Coleccion artesanal</p>
+        <p className="eyebrow">Colección artesanal</p>
 
         <h1>Atheliers</h1>
 
         <div className="line"></div>
 
         <p className="subtitle">
-          Joyeria elegante, minimalista y disenada para destacar cada detalle.
+          Joyería elegante, minimalista y diseñada para destacar cada detalle.
         </p>
       </section>
 
-      <section className="showcase" ref={showcaseRef}>
+      <section className="showcase">
         <div className="showcaseGrid">
           {galeriaPreview.map((item, index) => (
             <article
               key={item.id}
-              className={`featurePanel featurePanel${index + 1}`}
+              className={`featurePanel featurePanel${item.id} revealItem`}
+              style={{ transitionDelay: `${index * 120}ms` }}
             >
               <img className="featureImage" src={item.imagen} alt={item.titulo} />
 
@@ -257,70 +240,70 @@ export default function Home() {
         </div>
       </section>
 
-      <div
-        ref={menuPlaceholderRef}
-        className={`menuPlaceholder ${catalogoActivo ? 'catalogoActivo' : ''}`}
-        style={{ height: menuFijo ? `${menuHeight}px` : 'auto' }}
-      >
+      <section className="catalogoZona">
         <div
-          ref={menuRef}
-          className={`menuContenedor ${menuFijo ? 'fijo' : ''} ${
-            catalogoActivo ? 'catalogoActivo' : ''
-          }`}
+          ref={menuPlaceholderRef}
+          className="menuPlaceholder"
+          style={{ height: menuFijo ? `${menuHeight}px` : 'auto' }}
         >
-          <nav className="menuCategorias">
-            {categorias.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                className={`btnCategoria ${filtro === cat ? 'activo' : ''}`}
-                onClick={() => setFiltro(cat)}
-              >
-                {cat}
-              </button>
-            ))}
-          </nav>
+          <div
+            ref={menuRef}
+            className={`menuContenedor ${menuFijo ? 'fijo' : ''}`}
+          >
+            <nav className="menuCategorias">
+              {categorias.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  className={`btnCategoria ${filtro === cat ? 'activo' : ''}`}
+                  onClick={() => setFiltro(cat)}
+                >
+                  {cat}
+                </button>
+              ))}
+            </nav>
+          </div>
         </div>
-      </div>
 
-      <div className={`contentWrapper ${catalogoActivo ? 'catalogoActivo' : ''}`}>
-        {cargando ? (
-          <div className="estadoVacio">
-            <p>Conectando al atelier...</p>
-          </div>
-        ) : errorCarga ? (
-          <div className="estadoVacio">
-            <p>No se pudo conectar con el catalogo.</p>
-          </div>
-        ) : joyasFiltradas.length === 0 ? (
-          <div className="estadoVacio">
-            <p>Proximamente nuevas piezas en esta coleccion.</p>
-          </div>
-        ) : (
-          <section className="gallery">
-            {joyasFiltradas.map((joya, index) => (
-              <article
-                key={joya.id}
-                className="card reveal-card"
-                style={{ transitionDelay: `${(index % 4) * 40}ms` }}
-              >
-                <div className="imageBox">
-                  <img src={joya.imagen} alt={joya.nombre} />
-                </div>
-
-                <div className="info">
-                  <div>
-                    <h2>{joya.nombre}</h2>
-                    <p className="category">{joya.categoria}</p>
+        <div className="contentWrapper">
+          {cargando ? (
+            <div className="estadoVacio">
+              <p>Conectando al atelier...</p>
+            </div>
+          ) : errorCarga ? (
+            <div className="estadoVacio">
+              <p>No se pudo conectar con el catálogo.</p>
+            </div>
+          ) : joyasFiltradas.length === 0 ? (
+            <div className="estadoVacio">
+              <p>Próximamente nuevas piezas en esta colección.</p>
+            </div>
+          ) : (
+            <section className="gallery">
+              {joyasFiltradas.map((joya, index) => (
+                <article
+                  key={joya.id}
+                  className="card revealCard"
+                  style={{ transitionDelay: `${(index % 4) * 70}ms` }}
+                >
+                  <div className="imageBox">
+                    <img src={joya.imagen} alt={joya.nombre} />
                   </div>
 
-                  <p className="price">${joya.precio}</p>
-                </div>
-              </article>
-            ))}
-          </section>
-        )}
-      </div>
+                  <div className="info">
+                    <div>
+                      <h2>{joya.nombre}</h2>
+                      <p className="category">{joya.categoria}</p>
+                    </div>
+
+                    <p className="price">${joya.precio}</p>
+                  </div>
+                </article>
+              ))}
+            </section>
+          )}
+        </div>
+      </section>
 
       <footer className="piePagina">
         <div className="contenidoPie">
@@ -400,12 +383,11 @@ export default function Home() {
         .hero {
           position: relative;
           text-align: center;
-          padding: 22vh 20px 8vh;
+          padding: 22vh 20px 12vh;
           max-width: 900px;
           margin: 0 auto;
           z-index: 10;
           will-change: transform, opacity;
-          transition: opacity 0.1s ease-out;
         }
 
         .eyebrow {
@@ -453,61 +435,30 @@ export default function Home() {
           z-index: 15;
           width: 100%;
           max-width: 1120px;
-          max-height: 0;
-          margin: 0 auto;
+          margin: 0 auto 110px;
           padding: 0 5%;
           box-sizing: border-box;
-          overflow: hidden;
-          opacity: 0;
-          transform: translateY(42px);
-          transition:
-            max-height 0.72s cubic-bezier(0.16, 1, 0.3, 1),
-            opacity 0.52s ease,
-            transform 0.72s cubic-bezier(0.16, 1, 0.3, 1),
-            margin 0.72s cubic-bezier(0.16, 1, 0.3, 1);
-          will-change: max-height, opacity, transform;
-        }
-
-        .showcase.is-visible {
-          max-height: 470px;
-          opacity: 1;
-          transform: translateY(0);
-          margin-bottom: 0;
-        }
-
-        .showcase.is-hidden-up {
-          max-height: 0;
-          opacity: 0;
-          transform: translateY(-42px);
-          margin-bottom: 0;
-          pointer-events: none;
         }
 
         .showcaseGrid {
           display: grid;
           grid-template-columns: 1.18fr 0.82fr;
-          grid-template-rows: 215px 215px;
+          grid-template-rows: 225px 225px;
           gap: 18px;
         }
 
-        .showcase .featurePanel {
+        .featurePanel {
           position: relative;
           overflow: hidden;
           background: transparent;
           isolation: isolate;
-          opacity: 0;
-          transform: translateY(48px);
-          transition:
-            opacity 0.58s cubic-bezier(0.16, 1, 0.3, 1),
-            transform 0.62s cubic-bezier(0.16, 1, 0.3, 1);
-          will-change: transform, opacity;
         }
 
         .featurePanel1 {
           grid-row: span 2;
         }
 
-        .featurePanel .featureImage {
+        .featureImage {
           position: absolute;
           inset: 0;
           width: 100%;
@@ -515,57 +466,28 @@ export default function Home() {
           object-fit: cover;
           border: none;
           z-index: 1;
-          transform: scale(1.04);
-          transition: transform 0.62s cubic-bezier(0.16, 1, 0.3, 1);
+          transform: scale(1.08);
+          opacity: 0.72;
+          filter: saturate(0.82) brightness(1.04);
+          transition:
+            transform 1.35s cubic-bezier(0.16, 1, 0.3, 1),
+            opacity 1.15s cubic-bezier(0.16, 1, 0.3, 1),
+            filter 1.15s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .featurePanel .featureContent {
+        .featureContent {
           position: absolute;
           left: clamp(24px, 5vw, 58px);
           bottom: clamp(24px, 4.5vw, 52px);
           z-index: 2;
           max-width: 430px;
           color: #4a1e23;
-          text-shadow: 0 14px 38px rgba(252, 250, 248, 0.85);
           opacity: 0;
-          transform: translateY(24px);
+          transform: translateY(38px);
+          text-shadow: 0 16px 42px rgba(252, 250, 248, 0.88);
           transition:
-            opacity 0.58s cubic-bezier(0.16, 1, 0.3, 1),
-            transform 0.62s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .showcase.is-visible .featurePanel {
-          opacity: 1;
-          transform: translateY(0);
-        }
-
-        .showcase.is-visible .featurePanel .featureImage {
-          transform: scale(1);
-        }
-
-        .showcase.is-visible .featurePanel .featureContent {
-          opacity: 1;
-          transform: translateY(0);
-        }
-
-        .showcase.is-visible .featurePanel1 {
-          transition-delay: 0ms;
-        }
-
-        .showcase.is-visible .featurePanel2 {
-          transition-delay: 80ms;
-        }
-
-        .showcase.is-visible .featurePanel3 {
-          transition-delay: 150ms;
-        }
-
-        .showcase.is-hidden-up .featurePanel {
-          opacity: 0;
-          transform: translateY(-34px);
-          transition:
-            opacity 0.38s ease,
-            transform 0.42s ease;
+            opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+            transform 1.05s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .featureContent p {
@@ -605,44 +527,55 @@ export default function Home() {
           font-size: clamp(1.9rem, 3.2vw, 3.2rem);
         }
 
+        .featurePanel.visible .featureImage {
+          transform: scale(1);
+          opacity: 1;
+          filter: saturate(1) brightness(1);
+        }
+
+        .featurePanel.visible .featureContent {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
         .featurePanel:hover .featureImage {
-          transform: scale(1.02);
+          transform: scale(1.025);
+        }
+
+        .catalogoZona {
+          position: relative;
+          z-index: 300;
+          width: 100%;
+          margin-top: 0;
+          overflow: visible;
         }
 
         .menuPlaceholder {
           position: relative;
           width: 100%;
-          margin-bottom: 15px;
-          z-index: 400;
+          z-index: 1000;
+          margin-bottom: 0;
         }
 
         .menuContenedor {
           position: relative;
-          z-index: 400;
+          z-index: 1000;
           display: flex;
           justify-content: center;
           width: 100%;
-          padding: 10px 5% 0;
+          padding: 18px 5% 0;
           background: transparent;
           box-sizing: border-box;
-          opacity: 0;
-          transform: translateY(46px);
-          transition:
-            opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-            transform 0.64s cubic-bezier(0.16, 1, 0.3, 1);
-          will-change: transform, opacity;
-        }
-
-        .menuContenedor.catalogoActivo {
-          opacity: 1;
-          transform: translateY(0);
         }
 
         .menuContenedor.fijo {
           position: fixed;
           top: 20px;
           left: 0;
+          right: 0;
+          width: 100%;
           z-index: 1000;
+          padding: 10px 5% 0;
         }
 
         .menuCategorias {
@@ -650,13 +583,26 @@ export default function Home() {
           justify-content: center;
           gap: 40px;
           flex-wrap: wrap;
-          background: rgba(249, 245, 241, 0.85);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
+          background: rgba(249, 245, 241, 0.86);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
           padding: 15px 30px;
           border-radius: 50px;
-          box-shadow: 0 4px 20px rgba(74, 30, 35, 0.05);
-          border: 1px solid rgba(74, 30, 35, 0.05);
+          box-shadow: 0 8px 28px rgba(74, 30, 35, 0.06);
+          border: 1px solid rgba(74, 30, 35, 0.06);
+          animation: menuEntrada 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes menuEntrada {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         .btnCategoria {
@@ -670,11 +616,15 @@ export default function Home() {
           cursor: pointer;
           padding-bottom: 5px;
           border-bottom: 1px solid transparent;
-          transition: all 0.3s ease;
+          transition:
+            color 0.3s ease,
+            border-color 0.3s ease,
+            transform 0.3s ease;
         }
 
         .btnCategoria:hover {
           color: #4a1e23;
+          transform: translateY(-1px);
         }
 
         .btnCategoria.activo {
@@ -685,24 +635,13 @@ export default function Home() {
         .contentWrapper {
           position: relative;
           background: transparent;
-          padding: 0 5% 40px;
+          padding: 130px 5% 40px;
           max-width: 1280px;
           width: 100%;
           margin: 0 auto;
           z-index: 20;
           flex-grow: 1;
           box-sizing: border-box;
-          opacity: 0;
-          transform: translateY(58px);
-          transition:
-            opacity 0.68s cubic-bezier(0.16, 1, 0.3, 1),
-            transform 0.72s cubic-bezier(0.16, 1, 0.3, 1);
-          will-change: transform, opacity;
-        }
-
-        .contentWrapper.catalogoActivo {
-          opacity: 1;
-          transform: translateY(0);
         }
 
         .estadoVacio {
@@ -720,23 +659,16 @@ export default function Home() {
           gap: 56px 42px;
         }
 
-        .card.reveal-card {
-          opacity: 0;
-          transform: translateY(34px);
-          transition:
-            opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
-            transform 0.58s cubic-bezier(0.16, 1, 0.3, 1);
-          will-change: transform, opacity;
-        }
-
-        .card.reveal-card.card-visible {
-          opacity: 1;
-          transform: translateY(0);
+        .card {
+          background: transparent;
+          padding: 0;
+          border-radius: 0;
+          box-shadow: none;
+          transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .card:hover {
           transform: translateY(-8px);
-          transition: transform 0.35s ease;
         }
 
         .imageBox {
@@ -745,11 +677,13 @@ export default function Home() {
           border-radius: 12px;
           background: #eee8e5;
           box-shadow: 0 4px 15px rgba(74, 30, 35, 0.02);
-          transition: box-shadow 0.35s ease;
+          transition:
+            box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+            transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .card:hover .imageBox {
-          box-shadow: 0 12px 30px rgba(74, 30, 35, 0.06);
+          box-shadow: 0 16px 34px rgba(74, 30, 35, 0.08);
         }
 
         .imageBox img {
@@ -757,11 +691,14 @@ export default function Home() {
           height: 100%;
           object-fit: cover;
           display: block;
-          transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+          transform: scale(1.035);
+          transition:
+            transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+            filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .card:hover img {
-          transform: scale(1.04);
+          transform: scale(1.075);
         }
 
         .info {
@@ -795,6 +732,34 @@ export default function Home() {
           font-size: 1.1rem;
           color: #4a1e23;
           font-weight: 500;
+        }
+
+        .revealItem {
+          opacity: 0;
+          transform: translateY(54px);
+          transition:
+            opacity 1.05s cubic-bezier(0.16, 1, 0.3, 1),
+            transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: opacity, transform;
+        }
+
+        .revealItem.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .revealCard {
+          opacity: 0;
+          transform: translateY(44px) scale(0.985);
+          transition:
+            opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1),
+            transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: opacity, transform;
+        }
+
+        .revealCard.visible {
+          opacity: 1;
+          transform: translateY(0) scale(1);
         }
 
         .piePagina {
@@ -862,7 +827,7 @@ export default function Home() {
           font-weight: 500;
           letter-spacing: 1px;
           cursor: pointer;
-          z-index: 100;
+          z-index: 1200;
           box-shadow: 0 8px 25px rgba(58, 23, 27, 0.25);
           transition: all 0.3s ease;
         }
@@ -880,7 +845,7 @@ export default function Home() {
 
         @media (max-width: 768px) {
           .hero {
-            padding: 18vh 20px 4vh;
+            padding: 18vh 20px 8vh;
           }
 
           h1 {
@@ -888,11 +853,8 @@ export default function Home() {
           }
 
           .showcase {
+            margin: 0 auto 80px;
             padding: 0 15px;
-          }
-
-          .showcase.is-visible {
-            max-height: 1005px;
           }
 
           .showcaseGrid {
@@ -932,16 +894,13 @@ export default function Home() {
             margin-top: 12px;
           }
 
-          .menuPlaceholder {
-            margin-bottom: 20px;
-          }
-
           .menuContenedor {
-            padding: 10px 15px 0;
+            padding: 14px 15px 0;
           }
 
           .menuContenedor.fijo {
             top: 10px;
+            padding: 10px 15px 0;
           }
 
           .menuCategorias {
@@ -955,12 +914,12 @@ export default function Home() {
           }
 
           .contentWrapper {
-            padding: 0 15px 40px;
+            padding: 120px 15px 40px;
           }
 
           .gallery {
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px 15px;
+            gap: 24px 15px;
           }
 
           .info {
