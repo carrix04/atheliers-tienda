@@ -28,6 +28,7 @@ export default function Home() {
 
   const bgWatermarkRef = useRef<HTMLImageElement>(null);
   const heroRef = useRef<HTMLElement>(null);
+  const catalogoRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuPlaceholderRef = useRef<HTMLDivElement>(null);
 
@@ -60,12 +61,9 @@ export default function Home() {
   useEffect(() => {
     const cargarJoyas = async () => {
       try {
-        const res = await fetch(
-          'https://atheliers-backend.onrender.com/api/joyas/',
-          {
-            cache: 'no-store',
-          }
-        );
+        const res = await fetch('https://atheliers-backend.onrender.com/api/joyas/', {
+          cache: 'no-store',
+        });
 
         if (!res.ok) {
           throw new Error('No se pudo conectar con la API');
@@ -111,23 +109,18 @@ export default function Home() {
       }
 
       if (menuPlaceholderRef.current && menuRef.current) {
-        const topOffset = window.innerWidth <= 768 ? 10 : 20;
+        const topOffset = window.innerWidth <= 768 ? 10 : 18;
 
         const menuInicio =
-          menuPlaceholderRef.current.getBoundingClientRect().top +
-          window.scrollY;
+          menuPlaceholderRef.current.getBoundingClientRect().top + window.scrollY;
 
         const alturaMenu = menuRef.current.offsetHeight;
 
-        setMenuHeight((actual) =>
-          actual === alturaMenu ? actual : alturaMenu
-        );
+        setMenuHeight((actual) => (actual === alturaMenu ? actual : alturaMenu));
 
         const debeFijarse = window.scrollY + topOffset >= menuInicio;
 
-        setMenuFijo((actual) =>
-          actual === debeFijarse ? actual : debeFijarse
-        );
+        setMenuFijo((actual) => (actual === debeFijarse ? actual : debeFijarse));
       }
     };
 
@@ -168,8 +161,8 @@ export default function Home() {
         });
       },
       {
-        threshold: 0.16,
-        rootMargin: '0px 0px -40px 0px',
+        threshold: 0.14,
+        rootMargin: '0px 0px -35px 0px',
       }
     );
 
@@ -196,6 +189,13 @@ export default function Home() {
     window.open('https://ig.me/m/cn.atheliers', '_blank', 'noopener,noreferrer');
   };
 
+  const handleVerCatalogo = () => {
+    catalogoRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  };
+
   return (
     <main className="page">
       <div className="bgContenedor">
@@ -218,6 +218,10 @@ export default function Home() {
         <p className="subtitle">
           Joyería elegante, minimalista y diseñada para destacar cada detalle.
         </p>
+
+        <button className="btnHero" type="button" onClick={handleVerCatalogo}>
+          Ver catálogo
+        </button>
       </section>
 
       <section className="showcase">
@@ -230,6 +234,8 @@ export default function Home() {
             >
               <img className="featureImage" src={item.imagen} alt={item.titulo} />
 
+              <div className="featureOverlay"></div>
+
               <div className="featureContent">
                 <p>{item.categoria}</p>
                 <h3>{item.titulo}</h3>
@@ -240,16 +246,19 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="catalogoZona">
+      <section className="catalogoZona" ref={catalogoRef}>
+        <div className="catalogoIntro revealItem">
+          <p>Catálogo</p>
+          <h2>Piezas disponibles</h2>
+          <span>Selecciona una categoría para explorar la colección.</span>
+        </div>
+
         <div
           ref={menuPlaceholderRef}
           className="menuPlaceholder"
           style={{ height: menuFijo ? `${menuHeight}px` : 'auto' }}
         >
-          <div
-            ref={menuRef}
-            className={`menuContenedor ${menuFijo ? 'fijo' : ''}`}
-          >
+          <div ref={menuRef} className={`menuContenedor ${menuFijo ? 'fijo' : ''}`}>
             <nav className="menuCategorias">
               {categorias.map((cat) => (
                 <button
@@ -358,8 +367,7 @@ export default function Home() {
 
         .bgContenedor {
           position: fixed;
-          top: 0;
-          left: 0;
+          inset: 0;
           width: 100vw;
           height: 100vh;
           overflow: hidden;
@@ -430,12 +438,37 @@ export default function Home() {
           text-align: center;
         }
 
+        .btnHero {
+          margin-top: 38px;
+          background: transparent;
+          color: #4a1e23;
+          border: 1px solid rgba(74, 30, 35, 0.25);
+          border-radius: 999px;
+          padding: 13px 28px;
+          font-size: 0.78rem;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          cursor: pointer;
+          transition:
+            background 0.35s ease,
+            color 0.35s ease,
+            transform 0.35s ease,
+            border-color 0.35s ease;
+        }
+
+        .btnHero:hover {
+          background: #4a1e23;
+          color: #f9f5f1;
+          border-color: #4a1e23;
+          transform: translateY(-2px);
+        }
+
         .showcase {
           position: relative;
           z-index: 15;
           width: 100%;
           max-width: 1120px;
-          margin: 0 auto 110px;
+          margin: 0 auto 120px;
           padding: 0 5%;
           box-sizing: border-box;
         }
@@ -467,7 +500,7 @@ export default function Home() {
           border: none;
           z-index: 1;
           transform: scale(1.08);
-          opacity: 0.72;
+          opacity: 0.7;
           filter: saturate(0.82) brightness(1.04);
           transition:
             transform 1.35s cubic-bezier(0.16, 1, 0.3, 1),
@@ -475,11 +508,23 @@ export default function Home() {
             filter 1.15s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        .featureOverlay {
+          position: absolute;
+          inset: 0;
+          z-index: 2;
+          background: linear-gradient(
+            180deg,
+            rgba(252, 250, 249, 0.08),
+            rgba(252, 250, 249, 0.42)
+          );
+          pointer-events: none;
+        }
+
         .featureContent {
           position: absolute;
           left: clamp(24px, 5vw, 58px);
           bottom: clamp(24px, 4.5vw, 52px);
-          z-index: 2;
+          z-index: 3;
           max-width: 430px;
           color: #4a1e23;
           opacity: 0;
@@ -548,6 +593,43 @@ export default function Home() {
           width: 100%;
           margin-top: 0;
           overflow: visible;
+          scroll-margin-top: 120px;
+        }
+
+        .catalogoIntro {
+          position: relative;
+          z-index: 10;
+          max-width: 640px;
+          margin: 0 auto 34px;
+          padding: 0 20px;
+          text-align: center;
+        }
+
+        .catalogoIntro p {
+          margin: 0 0 12px;
+          font-size: 0.72rem;
+          text-transform: uppercase;
+          letter-spacing: 3.5px;
+          color: #9a6a5e;
+        }
+
+        .catalogoIntro h2 {
+          margin: 0;
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-size: clamp(2.5rem, 6vw, 4.8rem);
+          font-weight: 300;
+          line-height: 1;
+          color: #4a1e23;
+          text-transform: none;
+          letter-spacing: 1px;
+        }
+
+        .catalogoIntro span {
+          display: block;
+          margin-top: 16px;
+          font-size: 0.95rem;
+          line-height: 1.7;
+          color: #7b6460;
         }
 
         .menuPlaceholder {
@@ -570,12 +652,12 @@ export default function Home() {
 
         .menuContenedor.fijo {
           position: fixed;
-          top: 20px;
+          top: 18px;
           left: 0;
           right: 0;
           width: 100%;
           z-index: 1000;
-          padding: 10px 5% 0;
+          padding: 0 5%;
         }
 
         .menuCategorias {
@@ -583,20 +665,20 @@ export default function Home() {
           justify-content: center;
           gap: 40px;
           flex-wrap: wrap;
-          background: rgba(249, 245, 241, 0.86);
+          background: rgba(249, 245, 241, 0.88);
           backdrop-filter: blur(14px);
           -webkit-backdrop-filter: blur(14px);
           padding: 15px 30px;
           border-radius: 50px;
           box-shadow: 0 8px 28px rgba(74, 30, 35, 0.06);
           border: 1px solid rgba(74, 30, 35, 0.06);
-          animation: menuEntrada 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+          animation: menuEntrada 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         @keyframes menuEntrada {
           from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(18px);
           }
 
           to {
@@ -635,12 +717,11 @@ export default function Home() {
         .contentWrapper {
           position: relative;
           background: transparent;
-          padding: 130px 5% 40px;
+          padding: 112px 5% 40px;
           max-width: 1280px;
           width: 100%;
           margin: 0 auto;
           z-index: 20;
-          flex-grow: 1;
           box-sizing: border-box;
         }
 
@@ -852,8 +933,14 @@ export default function Home() {
             font-size: clamp(3.5rem, 15vw, 5rem);
           }
 
+          .btnHero {
+            margin-top: 32px;
+            padding: 12px 24px;
+            font-size: 0.72rem;
+          }
+
           .showcase {
-            margin: 0 auto 80px;
+            margin: 0 auto 86px;
             padding: 0 15px;
           }
 
@@ -894,13 +981,17 @@ export default function Home() {
             margin-top: 12px;
           }
 
+          .catalogoIntro {
+            margin-bottom: 28px;
+          }
+
           .menuContenedor {
             padding: 14px 15px 0;
           }
 
           .menuContenedor.fijo {
             top: 10px;
-            padding: 10px 15px 0;
+            padding: 0 15px;
           }
 
           .menuCategorias {
@@ -914,7 +1005,7 @@ export default function Home() {
           }
 
           .contentWrapper {
-            padding: 120px 15px 40px;
+            padding: 108px 15px 40px;
           }
 
           .gallery {
