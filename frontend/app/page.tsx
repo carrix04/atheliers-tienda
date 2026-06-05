@@ -387,7 +387,7 @@ export default function Home() {
         .page {
           position: relative;
           min-height: 100dvh;
-          background: transparent;
+          background: #fffdfb;
           color: #3a171b;
           padding: 0;
           display: flex;
@@ -414,7 +414,7 @@ export default function Home() {
           max-width: 1800px;
           height: auto;
           object-fit: contain;
-          opacity: 0.04;
+          opacity: 0.035;
           will-change: transform;
         }
 
@@ -818,7 +818,7 @@ export default function Home() {
           justify-content: center;
           gap: 40px;
           flex-wrap: wrap;
-          background: rgba(249, 245, 241, 0.88);
+          background: rgba(255, 253, 251, 0.9);
           backdrop-filter: blur(14px);
           -webkit-backdrop-filter: blur(14px);
           padding: 15px 30px;
