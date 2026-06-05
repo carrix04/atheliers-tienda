@@ -29,6 +29,7 @@ export default function Home() {
   const bgWatermarkRef = useRef<HTMLImageElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const catalogoRef = useRef<HTMLElement>(null);
+  const galeriaRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuPlaceholderRef = useRef<HTMLDivElement>(null);
 
@@ -103,8 +104,8 @@ export default function Home() {
       }
 
       if (heroRef.current) {
-        const opacity = Math.max(0, 1 - scroll / 520);
-        heroRef.current.style.transform = `translateY(${scroll * 0.18}px)`;
+        const opacity = Math.max(0, 1 - scroll / 620);
+        heroRef.current.style.transform = `translateY(${scroll * 0.12}px)`;
         heroRef.current.style.opacity = opacity.toString();
       }
 
@@ -161,8 +162,8 @@ export default function Home() {
         });
       },
       {
-        threshold: 0.14,
-        rootMargin: '0px 0px -35px 0px',
+        threshold: 0.15,
+        rootMargin: '0px 0px -45px 0px',
       }
     );
 
@@ -196,6 +197,13 @@ export default function Home() {
     });
   };
 
+  const handleVerGaleria = () => {
+    galeriaRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  };
+
   return (
     <main className="page">
       <div className="bgContenedor">
@@ -209,28 +217,46 @@ export default function Home() {
       </div>
 
       <section className="hero" ref={heroRef}>
-        <p className="eyebrow">Colección artesanal</p>
+        <div className="heroContenido">
+          <p className="eyebrow">Colección artesanal</p>
 
-        <h1>Atheliers</h1>
+          <h1>Atheliers</h1>
 
-        <div className="line"></div>
+          <div className="line"></div>
 
-        <p className="subtitle">
-          Joyería elegante, minimalista y diseñada para destacar cada detalle.
-        </p>
+          <p className="subtitle">
+            Joyería elegante, minimalista y diseñada para destacar cada detalle.
+          </p>
 
-        <button className="btnHero" type="button" onClick={handleVerCatalogo}>
-          Ver catálogo
+          <div className="heroActions">
+            <button className="btnHero principal" type="button" onClick={handleVerCatalogo}>
+              Ver catálogo
+            </button>
+
+            <button className="btnHero secundario" type="button" onClick={handleVerGaleria}>
+              Explorar
+            </button>
+          </div>
+        </div>
+
+        <button className="scrollCue" type="button" onClick={handleVerGaleria}>
+          <span>Desliza</span>
+          <i></i>
         </button>
       </section>
 
-      <section className="showcase">
+      <section className="showcase" ref={galeriaRef}>
+        <div className="showcaseIntro revealItem">
+          <p>Atheliers</p>
+          <h2>Una mirada a la colección</h2>
+        </div>
+
         <div className="showcaseGrid">
           {galeriaPreview.map((item, index) => (
             <article
               key={item.id}
               className={`featurePanel featurePanel${item.id} revealItem`}
-              style={{ transitionDelay: `${index * 120}ms` }}
+              style={{ transitionDelay: `${index * 140}ms` }}
             >
               <img className="featureImage" src={item.imagen} alt={item.titulo} />
 
@@ -316,7 +342,11 @@ export default function Home() {
 
       <footer className="piePagina">
         <div className="contenidoPie">
-          <p>&copy; 2026 Atheliers. Todos los derechos reservados.</p>
+          <p className="footerBrand">Joyería artesanal · Piezas seleccionadas · México</p>
+
+          <div className="footerLine"></div>
+
+          <p className="footerRights">&copy; 2026 Atheliers. Todos los derechos reservados.</p>
 
           <div className="redes">
             <a
@@ -390,12 +420,21 @@ export default function Home() {
 
         .hero {
           position: relative;
+          min-height: 100svh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
           text-align: center;
-          padding: 22vh 20px 12vh;
-          max-width: 900px;
+          padding: 80px 20px;
+          max-width: 980px;
+          width: 100%;
           margin: 0 auto;
           z-index: 10;
           will-change: transform, opacity;
+        }
+
+        .heroContenido {
+          transform: translateY(-10px);
         }
 
         .eyebrow {
@@ -438,11 +477,17 @@ export default function Home() {
           text-align: center;
         }
 
-        .btnHero {
+        .heroActions {
           margin-top: 38px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 14px;
+          flex-wrap: wrap;
+        }
+
+        .btnHero {
           background: transparent;
-          color: #4a1e23;
-          border: 1px solid rgba(74, 30, 35, 0.25);
           border-radius: 999px;
           padding: 13px 28px;
           font-size: 0.78rem;
@@ -456,11 +501,93 @@ export default function Home() {
             border-color 0.35s ease;
         }
 
+        .btnHero.principal {
+          color: #f9f5f1;
+          background: #4a1e23;
+          border: 1px solid #4a1e23;
+        }
+
+        .btnHero.secundario {
+          color: #4a1e23;
+          border: 1px solid rgba(74, 30, 35, 0.25);
+        }
+
         .btnHero:hover {
+          transform: translateY(-2px);
+        }
+
+        .btnHero.secundario:hover {
           background: #4a1e23;
           color: #f9f5f1;
           border-color: #4a1e23;
-          transform: translateY(-2px);
+        }
+
+        .btnHero.principal:hover {
+          background: #3a171b;
+          border-color: #3a171b;
+        }
+
+        .scrollCue {
+          position: absolute;
+          bottom: 34px;
+          left: 50%;
+          transform: translateX(-50%);
+          border: none;
+          background: transparent;
+          color: #9a6a5e;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          opacity: 0.72;
+          transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .scrollCue:hover {
+          opacity: 1;
+          transform: translateX(-50%) translateY(-2px);
+        }
+
+        .scrollCue span {
+          font-size: 0.65rem;
+          text-transform: uppercase;
+          letter-spacing: 2.5px;
+        }
+
+        .scrollCue i {
+          width: 1px;
+          height: 36px;
+          background: rgba(74, 30, 35, 0.28);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .scrollCue i::after {
+          content: '';
+          position: absolute;
+          top: -18px;
+          left: 0;
+          width: 1px;
+          height: 18px;
+          background: #4a1e23;
+          animation: scrollLinea 1.8s ease-in-out infinite;
+        }
+
+        @keyframes scrollLinea {
+          0% {
+            transform: translateY(0);
+            opacity: 0;
+          }
+
+          30% {
+            opacity: 1;
+          }
+
+          100% {
+            transform: translateY(54px);
+            opacity: 0;
+          }
         }
 
         .showcase {
@@ -468,9 +595,35 @@ export default function Home() {
           z-index: 15;
           width: 100%;
           max-width: 1120px;
-          margin: 0 auto 120px;
-          padding: 0 5%;
+          margin: 0 auto 125px;
+          padding: 22px 5% 0;
           box-sizing: border-box;
+          scroll-margin-top: 70px;
+        }
+
+        .showcaseIntro {
+          text-align: center;
+          margin: 0 auto 38px;
+          max-width: 620px;
+        }
+
+        .showcaseIntro p {
+          margin: 0 0 12px;
+          font-size: 0.7rem;
+          text-transform: uppercase;
+          letter-spacing: 3.4px;
+          color: #9a6a5e;
+        }
+
+        .showcaseIntro h2 {
+          margin: 0;
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-size: clamp(2.4rem, 5vw, 4.6rem);
+          font-weight: 300;
+          line-height: 1;
+          text-transform: none;
+          letter-spacing: 1px;
+          color: #4a1e23;
         }
 
         .showcaseGrid {
@@ -672,19 +825,6 @@ export default function Home() {
           border-radius: 50px;
           box-shadow: 0 8px 28px rgba(74, 30, 35, 0.06);
           border: 1px solid rgba(74, 30, 35, 0.06);
-          animation: menuEntrada 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        @keyframes menuEntrada {
-          from {
-            opacity: 0;
-            transform: translateY(18px);
-          }
-
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
         }
 
         .btnCategoria {
@@ -737,7 +877,7 @@ export default function Home() {
         .gallery {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 56px 42px;
+          gap: 60px 46px;
         }
 
         .card {
@@ -745,11 +885,14 @@ export default function Home() {
           padding: 0;
           border-radius: 0;
           box-shadow: none;
-          transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+          transition:
+            transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+            opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: transform;
         }
 
         .card:hover {
-          transform: translateY(-8px);
+          transform: translateY(-10px);
         }
 
         .imageBox {
@@ -759,12 +902,15 @@ export default function Home() {
           background: #eee8e5;
           box-shadow: 0 4px 15px rgba(74, 30, 35, 0.02);
           transition:
-            box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-            transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+            transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+            border-radius 0.55s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .card:hover .imageBox {
-          box-shadow: 0 16px 34px rgba(74, 30, 35, 0.08);
+          transform: translateY(-4px);
+          box-shadow: 0 20px 42px rgba(74, 30, 35, 0.09);
+          border-radius: 14px;
         }
 
         .imageBox img {
@@ -772,14 +918,16 @@ export default function Home() {
           height: 100%;
           object-fit: cover;
           display: block;
-          transform: scale(1.035);
+          transform: scale(1.025);
+          filter: saturate(0.96) brightness(1.01);
           transition:
-            transform 1s cubic-bezier(0.16, 1, 0.3, 1),
-            filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform 1.15s cubic-bezier(0.16, 1, 0.3, 1),
+            filter 0.9s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .card:hover img {
           transform: scale(1.075);
+          filter: saturate(1.04) brightness(1.02);
         }
 
         .info {
@@ -788,6 +936,13 @@ export default function Home() {
           justify-content: space-between;
           gap: 15px;
           padding: 18px 5px 5px;
+          transition:
+            transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+            opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card:hover .info {
+          transform: translateY(-3px);
         }
 
         h2 {
@@ -797,6 +952,14 @@ export default function Home() {
           text-transform: uppercase;
           letter-spacing: 2.2px;
           color: #4a1e23;
+          transition:
+            letter-spacing 0.45s ease,
+            color 0.45s ease;
+        }
+
+        .card:hover h2 {
+          letter-spacing: 2.8px;
+          color: #3a171b;
         }
 
         .category {
@@ -804,6 +967,11 @@ export default function Home() {
           font-size: 0.76rem;
           color: #a28b85;
           font-weight: 300;
+          transition: color 0.45s ease;
+        }
+
+        .card:hover .category {
+          color: #8e746e;
         }
 
         .price {
@@ -813,11 +981,19 @@ export default function Home() {
           font-size: 1.1rem;
           color: #4a1e23;
           font-weight: 500;
+          transition:
+            transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+            color 0.45s ease;
+        }
+
+        .card:hover .price {
+          transform: translateY(-1px);
+          color: #3a171b;
         }
 
         .revealItem {
           opacity: 0;
-          transform: translateY(54px);
+          transform: translateY(72px) scale(0.975);
           transition:
             opacity 1.05s cubic-bezier(0.16, 1, 0.3, 1),
             transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
@@ -826,7 +1002,7 @@ export default function Home() {
 
         .revealItem.visible {
           opacity: 1;
-          transform: translateY(0);
+          transform: translateY(0) scale(1);
         }
 
         .revealCard {
@@ -849,7 +1025,7 @@ export default function Home() {
           width: 100%;
           box-sizing: border-box;
           border-top: 1px solid rgba(74, 30, 35, 0.08);
-          padding: 40px 5% 90px;
+          padding: 52px 5% 96px;
           margin-top: auto;
         }
 
@@ -861,7 +1037,7 @@ export default function Home() {
           flex-direction: column;
           justify-content: center;
           align-items: center;
-          gap: 18px;
+          gap: 16px;
           font-size: 0.8rem;
           color: #a28b85;
           font-family: 'system-ui', -apple-system, sans-serif;
@@ -870,6 +1046,26 @@ export default function Home() {
 
         .contenidoPie p {
           margin: 0;
+        }
+
+        .footerBrand {
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-size: clamp(1.35rem, 3vw, 2rem);
+          font-weight: 300;
+          letter-spacing: 0.5px;
+          color: #4a1e23;
+        }
+
+        .footerLine {
+          width: 46px;
+          height: 1px;
+          background: rgba(74, 30, 35, 0.18);
+          margin: 2px 0;
+        }
+
+        .footerRights {
+          font-size: 0.76rem;
+          color: #a28b85;
         }
 
         .redes {
@@ -882,13 +1078,17 @@ export default function Home() {
         .redes a {
           color: #7b6460;
           text-decoration: none;
-          transition: color 0.3s ease;
+          transition:
+            color 0.3s ease,
+            transform 0.3s ease;
           text-transform: uppercase;
-          letter-spacing: 1px;
+          letter-spacing: 1.4px;
+          font-size: 0.76rem;
         }
 
         .redes a:hover {
           color: #4a1e23;
+          transform: translateY(-1px);
         }
 
         .btnFlotanteInsta {
@@ -926,22 +1126,39 @@ export default function Home() {
 
         @media (max-width: 768px) {
           .hero {
-            padding: 18vh 20px 8vh;
+            min-height: 100svh;
+            padding: 70px 20px;
+          }
+
+          .heroContenido {
+            transform: translateY(-6px);
           }
 
           h1 {
             font-size: clamp(3.5rem, 15vw, 5rem);
           }
 
-          .btnHero {
+          .heroActions {
             margin-top: 32px;
-            padding: 12px 24px;
-            font-size: 0.72rem;
+            gap: 12px;
+          }
+
+          .btnHero {
+            padding: 12px 22px;
+            font-size: 0.7rem;
+          }
+
+          .scrollCue {
+            bottom: 26px;
           }
 
           .showcase {
-            margin: 0 auto 86px;
-            padding: 0 15px;
+            margin: 0 auto 92px;
+            padding: 28px 15px 0;
+          }
+
+          .showcaseIntro {
+            margin-bottom: 30px;
           }
 
           .showcaseGrid {
@@ -1010,12 +1227,17 @@ export default function Home() {
 
           .gallery {
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 24px 15px;
+            gap: 28px 15px;
           }
 
           .info {
             flex-direction: column;
             gap: 8px;
+          }
+
+          .footerBrand {
+            max-width: 260px;
+            line-height: 1.25;
           }
 
           .btnFlotanteInsta {
