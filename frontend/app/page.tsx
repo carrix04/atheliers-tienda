@@ -46,7 +46,7 @@ export default function Home() {
       titulo: 'Diseño artesanal',
       categoria: 'Atheliers',
       descripcion: 'Piezas pensadas para lucir con elegancia sin exceso.',
-      imagen: '/galeria2.jpg',
+      imagen: '/galeria1.jpg',
     },
     {
       id: 2,
@@ -60,7 +60,7 @@ export default function Home() {
       titulo: 'Detalles únicos',
       categoria: 'Atheliers',
       descripcion: 'Una mirada previa antes de explorar el catálogo completo.',
-      imagen: '/galeria1.jpg',
+      imagen: '/galeria2.jpg',
     },
   ];
 
@@ -1004,94 +1004,86 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
           position: absolute;
           inset: 0;
           z-index: 2;
-          background: transparent;
+          background: linear-gradient(
+            180deg,
+            transparent 0%,
+            transparent 58%,
+            rgba(28, 10, 13, 0.08) 78%,
+            rgba(28, 10, 13, 0.24) 100%
+          );
           pointer-events: none;
         }
 
         .featureContent {
           position: absolute;
-          left: clamp(20px, 3vw, 38px);
-          bottom: clamp(20px, 3vw, 38px);
+          left: clamp(22px, 3vw, 42px);
+          bottom: clamp(22px, 3vw, 42px);
           right: auto;
           top: auto;
           z-index: 3;
-          max-width: 260px;
-          padding: 12px 14px 13px;
+          max-width: 310px;
+          padding: 0;
           color: #fffdfb;
           opacity: 0;
           text-align: left;
           transform: translateY(24px);
           text-shadow:
-            0 1px 1px rgba(58, 23, 27, 0.24),
-            0 10px 24px rgba(58, 23, 27, 0.3);
-          isolation: isolate;
+            0 1px 2px rgba(28, 10, 13, 0.42),
+            0 8px 22px rgba(28, 10, 13, 0.5),
+            0 18px 42px rgba(28, 10, 13, 0.28);
+          pointer-events: none;
           transition:
             opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
             transform 1.05s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .featureContent::before {
-          content: '';
-          position: absolute;
-          inset: -11px -62px -12px -15px;
-          z-index: -1;
-          border-radius: 20px;
-          background:
-            radial-gradient(
-              ellipse at 0% 100%,
-              rgba(58, 23, 27, 0.3),
-              rgba(58, 23, 27, 0.16) 38%,
-              rgba(58, 23, 27, 0.055) 64%,
-              transparent 100%
-            );
-          backdrop-filter: blur(4px);
-          -webkit-backdrop-filter: blur(4px);
-          opacity: 0.68;
+          display: none;
         }
 
         .featureContent p {
-          margin: 0 0 7px;
+          margin: 0 0 8px;
           font-size: 0.55rem;
           text-transform: uppercase;
-          letter-spacing: 2.5px;
+          letter-spacing: 2.8px;
           color: rgba(255, 253, 251, 0.78);
         }
 
         .featureContent h3 {
           margin: 0;
           font-family: 'Cormorant Garamond', Georgia, serif;
-          font-size: clamp(1.28rem, 2.25vw, 2.25rem);
+          font-size: clamp(1.55rem, 2.7vw, 2.85rem);
           font-weight: 300;
-          line-height: 0.98;
+          line-height: 0.96;
           letter-spacing: 0.4px;
-          color: rgba(255, 253, 251, 0.96);
+          color: rgba(255, 253, 251, 0.98);
         }
 
         .featureContent span {
           display: block;
-          margin-top: 8px;
-          max-width: 235px;
-          font-size: 0.69rem;
+          margin-top: 9px;
+          max-width: 270px;
+          font-size: 0.74rem;
           line-height: 1.5;
-          color: rgba(255, 253, 251, 0.74);
+          color: rgba(255, 253, 251, 0.78);
           font-weight: 300;
         }
 
         .featurePanel2 .featureContent,
         .featurePanel3 .featureContent {
-          max-width: 235px;
-          padding: 11px 13px 12px;
+          max-width: 270px;
+          padding: 0;
         }
 
         .featurePanel2 .featureContent h3,
         .featurePanel3 .featureContent h3 {
-          font-size: clamp(1.08rem, 1.65vw, 1.68rem);
+          font-size: clamp(1.3rem, 2vw, 2rem);
         }
 
         .featurePanel2 .featureContent span,
         .featurePanel3 .featureContent span {
-          font-size: 0.65rem;
-          max-width: 205px;
+          font-size: 0.68rem;
+          max-width: 230px;
         }
 
         .featurePanel.visible .featureImage {
@@ -2044,25 +2036,32 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
           .featurePanel2 .featureContent,
           .featurePanel3 .featureContent {
             left: 20px;
-            bottom: 20px;
+            bottom: 22px;
             right: auto;
             top: auto;
-            max-width: 225px;
-            padding: 11px 12px 12px;
+            max-width: 230px;
+            padding: 0;
+          }
+
+          .featureContent p,
+          .featurePanel2 .featureContent p,
+          .featurePanel3 .featureContent p {
+            font-size: 0.52rem;
+            letter-spacing: 2.4px;
+            margin-bottom: 7px;
           }
 
           .featureContent h3,
           .featurePanel2 .featureContent h3,
           .featurePanel3 .featureContent h3 {
-            font-size: clamp(1.25rem, 6.4vw, 2.15rem);
+            font-size: clamp(1.45rem, 7vw, 2.35rem);
+            line-height: 0.96;
           }
 
           .featureContent span,
           .featurePanel2 .featureContent span,
           .featurePanel3 .featureContent span {
-            font-size: 0.64rem;
-            margin-top: 7px;
-            max-width: 195px;
+            display: none;
           }
 
           .catalogoIntro {
