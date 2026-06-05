@@ -46,7 +46,7 @@ export default function Home() {
       titulo: 'Diseño artesanal',
       categoria: 'Atheliers',
       descripcion: 'Piezas pensadas para lucir con elegancia sin exceso.',
-      imagen: '/galeria1.jpg',
+      imagen: '/galeria2.jpg',
     },
     {
       id: 2,
@@ -60,7 +60,7 @@ export default function Home() {
       titulo: 'Detalles únicos',
       categoria: 'Atheliers',
       descripcion: 'Una mirada previa antes de explorar el catálogo completo.',
-      imagen: '/galeria2.jpg',
+      imagen: '/galeria1.jpg',
     },
   ];
 
@@ -932,8 +932,8 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
           position: relative;
           z-index: 15;
           width: 100%;
-          max-width: 1280px;
-          margin: 0 auto 135px;
+          max-width: 1440px;
+          margin: 0 auto 165px;
           padding: 22px 5% 0;
           box-sizing: border-box;
           scroll-margin-top: 70px;
@@ -941,7 +941,7 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
 
         .showcaseIntro {
           text-align: center;
-          margin: 0 auto 42px;
+          margin: 0 auto 46px;
           max-width: 620px;
         }
 
@@ -966,9 +966,9 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
 
         .showcaseGrid {
           display: grid;
-          grid-template-columns: 1.2fr 0.8fr;
-          grid-template-rows: 285px 285px;
-          gap: 22px;
+          grid-template-columns: 1.08fr 0.92fr;
+          grid-template-rows: 410px 410px;
+          gap: 24px;
         }
 
         .featurePanel {
@@ -988,9 +988,10 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
           width: 100%;
           height: 100%;
           object-fit: cover;
+          object-position: center;
           border: none;
           z-index: 1;
-          transform: scale(1.06);
+          transform: scale(1.045);
           opacity: 1;
           filter: saturate(1.04) brightness(1.03) contrast(1.04);
           transition:
@@ -1009,18 +1010,20 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
 
         .featureContent {
           position: absolute;
-          top: clamp(22px, 3vw, 36px);
-          left: clamp(22px, 3.5vw, 44px);
-          bottom: auto;
+          left: clamp(20px, 3vw, 38px);
+          bottom: clamp(20px, 3vw, 38px);
+          right: auto;
+          top: auto;
           z-index: 3;
-          max-width: 315px;
-          padding: 15px 17px 16px;
+          max-width: 260px;
+          padding: 12px 14px 13px;
           color: #fffdfb;
           opacity: 0;
-          transform: translateY(28px);
+          text-align: left;
+          transform: translateY(24px);
           text-shadow:
-            0 1px 1px rgba(58, 23, 27, 0.2),
-            0 10px 28px rgba(58, 23, 27, 0.35);
+            0 1px 1px rgba(58, 23, 27, 0.24),
+            0 10px 24px rgba(58, 23, 27, 0.3);
           isolation: isolate;
           transition:
             opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
@@ -1030,65 +1033,65 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
         .featureContent::before {
           content: '';
           position: absolute;
-          inset: -12px -18px -13px -16px;
+          inset: -11px -62px -12px -15px;
           z-index: -1;
-          border-radius: 22px;
+          border-radius: 20px;
           background:
             radial-gradient(
-              circle at 16% 12%,
-              rgba(58, 23, 27, 0.5),
-              rgba(58, 23, 27, 0.28) 42%,
-              rgba(58, 23, 27, 0.1) 68%,
+              ellipse at 0% 100%,
+              rgba(58, 23, 27, 0.3),
+              rgba(58, 23, 27, 0.16) 38%,
+              rgba(58, 23, 27, 0.055) 64%,
               transparent 100%
             );
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          opacity: 0.95;
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
+          opacity: 0.68;
         }
 
         .featureContent p {
-          margin: 0 0 8px;
-          font-size: 0.58rem;
+          margin: 0 0 7px;
+          font-size: 0.55rem;
           text-transform: uppercase;
-          letter-spacing: 2.6px;
-          color: rgba(255, 253, 251, 0.82);
+          letter-spacing: 2.5px;
+          color: rgba(255, 253, 251, 0.78);
         }
 
         .featureContent h3 {
           margin: 0;
           font-family: 'Cormorant Garamond', Georgia, serif;
-          font-size: clamp(1.55rem, 3vw, 2.9rem);
+          font-size: clamp(1.28rem, 2.25vw, 2.25rem);
           font-weight: 300;
-          line-height: 0.96;
-          letter-spacing: 0.5px;
-          color: #fffdfb;
+          line-height: 0.98;
+          letter-spacing: 0.4px;
+          color: rgba(255, 253, 251, 0.96);
         }
 
         .featureContent span {
           display: block;
-          margin-top: 10px;
-          max-width: 270px;
-          font-size: 0.78rem;
-          line-height: 1.55;
-          color: rgba(255, 253, 251, 0.82);
+          margin-top: 8px;
+          max-width: 235px;
+          font-size: 0.69rem;
+          line-height: 1.5;
+          color: rgba(255, 253, 251, 0.74);
           font-weight: 300;
         }
 
         .featurePanel2 .featureContent,
         .featurePanel3 .featureContent {
-          max-width: 275px;
-          padding: 13px 15px 14px;
+          max-width: 235px;
+          padding: 11px 13px 12px;
         }
 
         .featurePanel2 .featureContent h3,
         .featurePanel3 .featureContent h3 {
-          font-size: clamp(1.35rem, 2.2vw, 2.15rem);
+          font-size: clamp(1.08rem, 1.65vw, 1.68rem);
         }
 
         .featurePanel2 .featureContent span,
         .featurePanel3 .featureContent span {
-          font-size: 0.74rem;
-          max-width: 235px;
+          font-size: 0.65rem;
+          max-width: 205px;
         }
 
         .featurePanel.visible .featureImage {
@@ -1103,7 +1106,7 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
         }
 
         .featurePanel:hover .featureImage {
-          transform: scale(1.025);
+          transform: scale(1.018);
         }
 
         .catalogoZona {
@@ -2012,7 +2015,7 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
 
           .showcase {
             max-width: 1120px;
-            margin: 0 auto 92px;
+            margin: 0 auto 115px;
             padding: 28px 15px 0;
           }
 
@@ -2023,43 +2026,43 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
           .showcaseGrid {
             grid-template-columns: 1fr;
             grid-template-rows: none;
-            gap: 16px;
+            gap: 18px;
           }
 
           .featurePanel,
           .featurePanel1,
           .featurePanel2,
           .featurePanel3 {
-            min-height: 295px;
+            min-height: 430px;
           }
 
           .featurePanel1 {
-            min-height: 380px;
+            min-height: 560px;
           }
 
           .featureContent,
           .featurePanel2 .featureContent,
           .featurePanel3 .featureContent {
-            top: 22px;
-            left: 22px;
-            right: 22px;
-            bottom: auto;
-            max-width: 270px;
-            padding: 13px 15px 14px;
+            left: 20px;
+            bottom: 20px;
+            right: auto;
+            top: auto;
+            max-width: 225px;
+            padding: 11px 12px 12px;
           }
 
           .featureContent h3,
           .featurePanel2 .featureContent h3,
           .featurePanel3 .featureContent h3 {
-            font-size: clamp(1.55rem, 8vw, 2.7rem);
+            font-size: clamp(1.25rem, 6.4vw, 2.15rem);
           }
 
           .featureContent span,
           .featurePanel2 .featureContent span,
           .featurePanel3 .featureContent span {
-            font-size: 0.74rem;
-            margin-top: 9px;
-            max-width: 235px;
+            font-size: 0.64rem;
+            margin-top: 7px;
+            max-width: 195px;
           }
 
           .catalogoIntro {
