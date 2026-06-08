@@ -7,6 +7,9 @@ type Joya = {
   nombre: string;
   precio: string | number;
   imagen: string;
+  imagen_2?: string | null;
+  imagen_3?: string | null;
+  imagen_4?: string | null;
   categoria: string;
 };
 
@@ -26,6 +29,7 @@ export default function Home() {
   const [menuFijo, setMenuFijo] = useState(false);
   const [menuHeight, setMenuHeight] = useState(0);
   const [joyaSeleccionada, setJoyaSeleccionada] = useState<Joya | null>(null);
+  const [imagenModal, setImagenModal] = useState<string | null>(null);
   const [bolsa, setBolsa] = useState<Joya[]>([]);
   const [bolsaAbierta, setBolsaAbierta] = useState(false);
   const [mensajeCopiado, setMensajeCopiado] = useState(false);
@@ -178,7 +182,7 @@ export default function Home() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setJoyaSeleccionada(null);
+        cerrarModalProducto();
         setBolsaAbierta(false);
       }
     };
@@ -195,6 +199,12 @@ export default function Home() {
       .replace(/[\u0300-\u036f]/g, '')
       .trim();
 
+  const obtenerImagenesJoya = (joya: Joya) => {
+    return [joya.imagen, joya.imagen_2, joya.imagen_3, joya.imagen_4].filter(
+      (imagen): imagen is string => Boolean(imagen)
+    );
+  };
+
   const optimizarImagen = (url: string, ancho = 900) => {
     if (!url) return '';
 
@@ -203,6 +213,20 @@ export default function Home() {
     }
 
     return url;
+  };
+
+  const abrirModalProducto = (joya: Joya) => {
+    const imagenes = obtenerImagenesJoya(joya);
+
+    setJoyaSeleccionada(joya);
+    setImagenModal(imagenes[0] ?? joya.imagen);
+    setMensajeCopiado(false);
+  };
+
+  const cerrarModalProducto = () => {
+    setJoyaSeleccionada(null);
+    setImagenModal(null);
+    setMensajeCopiado(false);
   };
 
   const mostrarPrecio = (precio: string | number) => {
@@ -468,12 +492,12 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
                   key={joya.id}
                   className="card revealCard"
                   style={{ transitionDelay: `${(index % 4) * 70}ms` }}
-                  onClick={() => setJoyaSeleccionada(joya)}
+                  onClick={() => abrirModalProducto(joya)}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter') {
-                      setJoyaSeleccionada(joya);
+                      abrirModalProducto(joya);
                     }
                   }}
                 >
@@ -500,7 +524,7 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
                     type="button"
                     onClick={(event) => {
                       event.stopPropagation();
-                      setJoyaSeleccionada(joya);
+                      abrirModalProducto(joya);
                     }}
                   >
                     Ver pieza
@@ -580,12 +604,12 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
       </button>
 
       {joyaSeleccionada && (
-        <div className="modalOverlay" onClick={() => setJoyaSeleccionada(null)}>
+        <div className="modalOverlay" onClick={cerrarModalProducto}>
           <section className="modalProducto" onClick={(event) => event.stopPropagation()}>
             <button
               className="btnCerrar"
               type="button"
-              onClick={() => setJoyaSeleccionada(null)}
+              onClick={cerrarModalProducto}
               aria-label="Cerrar"
             >
               ×
@@ -593,11 +617,34 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
 
             <div className="modalImagen">
               <img
-                src={optimizarImagen(joyaSeleccionada.imagen, 1200)}
+                src={optimizarImagen(imagenModal ?? joyaSeleccionada.imagen, 1200)}
                 alt={joyaSeleccionada.nombre}
                 loading="eager"
                 decoding="async"
               />
+
+              {obtenerImagenesJoya(joyaSeleccionada).length > 1 && (
+                <div className="modalMiniaturas">
+                  {obtenerImagenesJoya(joyaSeleccionada).map((imagen, index) => (
+                    <button
+                      key={`${imagen}-${index}`}
+                      type="button"
+                      className={`miniaturaBtn ${
+                        (imagenModal ?? joyaSeleccionada.imagen) === imagen ? 'activa' : ''
+                      }`}
+                      onClick={() => setImagenModal(imagen)}
+                      aria-label={`Ver imagen ${index + 1}`}
+                    >
+                      <img
+                        src={optimizarImagen(imagen, 220)}
+                        alt={`${joyaSeleccionada.nombre} imagen ${index + 1}`}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="modalInfo">
@@ -1737,12 +1784,62 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
         }
 
         .modalImagen {
+          position: relative;
           min-height: 620px;
           background: #eee8e5;
           overflow: hidden;
         }
 
-        .modalImagen img {
+        .modalImagen > img {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          transition:
+            opacity 0.35s ease,
+            transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modalMiniaturas {
+          position: absolute;
+          left: 18px;
+          right: 18px;
+          bottom: 18px;
+          display: flex;
+          gap: 10px;
+          z-index: 4;
+        }
+
+        .miniaturaBtn {
+          width: 62px;
+          height: 78px;
+          padding: 0;
+          border: 1px solid rgba(255, 253, 251, 0.55);
+          background: rgba(255, 253, 251, 0.22);
+          cursor: pointer;
+          overflow: hidden;
+          opacity: 0.68;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          transition:
+            opacity 0.3s ease,
+            transform 0.3s ease,
+            border-color 0.3s ease;
+        }
+
+        .miniaturaBtn:hover {
+          opacity: 1;
+          transform: translateY(-2px);
+        }
+
+        .miniaturaBtn.activa {
+          opacity: 1;
+          border-color: rgba(255, 253, 251, 0.95);
+        }
+
+        .miniaturaBtn img {
           width: 100%;
           height: 100%;
           object-fit: cover;
@@ -2139,8 +2236,20 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
           }
 
           .modalImagen {
-            min-height: 320px;
-            max-height: 420px;
+            min-height: 340px;
+            max-height: 430px;
+          }
+
+          .modalMiniaturas {
+            left: 14px;
+            right: 14px;
+            bottom: 14px;
+            gap: 8px;
+          }
+
+          .miniaturaBtn {
+            width: 52px;
+            height: 66px;
           }
 
           .modalInfo {
