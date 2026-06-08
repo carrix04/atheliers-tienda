@@ -2236,20 +2236,46 @@ Total estimado: ${mostrarPrecio(totalBolsa)}
           }
 
           .modalImagen {
+            position: relative;
             min-height: 340px;
             max-height: 430px;
+            overflow: visible;
+            display: flex;
+            flex-direction: column;
+            background: #eee8e5;
+          }
+
+          .modalImagen > img {
+            position: relative;
+            inset: auto;
+            width: 100%;
+            height: 390px;
+            object-fit: cover;
           }
 
           .modalMiniaturas {
-            left: 14px;
-            right: 14px;
-            bottom: 14px;
+            position: static;
+            left: auto;
+            right: auto;
+            bottom: auto;
+            display: flex;
+            justify-content: center;
             gap: 8px;
+            padding: 12px 12px 14px;
+            background: rgba(255, 253, 251, 0.82);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
           }
 
           .miniaturaBtn {
-            width: 52px;
-            height: 66px;
+            width: 50px;
+            height: 64px;
+            border-color: rgba(74, 30, 35, 0.14);
+            background: rgba(255, 253, 251, 0.75);
+          }
+
+          .miniaturaBtn.activa {
+            border-color: rgba(74, 30, 35, 0.65);
           }
 
           .modalInfo {
